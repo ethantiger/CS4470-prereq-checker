@@ -1,0 +1,134 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #e2e8f0;
+  width: 250px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  border-right: 1px solid #334155;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+  min-height: 70px;
+}
+
+.sidebar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.toggle-btn {
+  background: #334155;
+  border: none;
+  color: #e2e8f0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.toggle-btn:hover {
+  background: #475569;
+  transform: scale(1.05);
+}
+
+.toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  gap: 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #cbd5e1;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  gap: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nav-item:hover {
+  background: #334155;
+  color: #f8fafc;
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.nav-item.active:hover {
+  background: #2563eb;
+}
+
+.nav-icon {
+  font-size: 20px;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-text {
+  font-size: 15px;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.collapsed .nav-text {
+  display: none;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
+  height: 100vh;
+}
