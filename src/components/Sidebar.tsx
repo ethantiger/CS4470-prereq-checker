@@ -14,7 +14,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     <div className="app-container">
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-title">{!isCollapsed && 'CS4470'}</h2>
+          <h2 className="sidebar-title">{!isCollapsed && 'Prereq Checker'}</h2>
           <button
             className="toggle-btn"
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -31,7 +31,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             title="Prerequisites Checker"
           >
             <span className="nav-icon"><IconListCheck /></span>
-            {!isCollapsed && <span className="nav-text">Prerequisites</span>}
+            {!isCollapsed && <span className="nav-text">Check Prereqs</span>}
           </Link>
 
           <Link
