@@ -2,8 +2,8 @@
 import { useState } from 'react';
 
 import './Prereq.css';
-import UploadFile from '@/src/components/UploadFile';
-import StudentTable from '@/src/components/StudentTable';
+import UploadFile from '@/components/UploadFile';
+import StudentTable from '@/components/StudentTable';
 
 export default function Prereq() {
   const [students, setStudents] = useState<any[]>([]);

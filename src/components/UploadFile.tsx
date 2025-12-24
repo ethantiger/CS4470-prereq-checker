@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { IconFileUpload } from '@tabler/icons-react';
 
-import { extractInfo } from '@/src/helpers/parseFile';
+import { extractInfo } from '@/helpers/parseFile';
 import './UploadFile.css';
 import { Student } from "../types";
 
