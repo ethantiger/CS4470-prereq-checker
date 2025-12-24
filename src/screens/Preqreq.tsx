@@ -1,11 +1,12 @@
 import { IconFileUpload } from '@tabler/icons-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, Fragment } from 'react';
 import { extractInfo } from '../helpers/parseFile';
 import './Prereq.css';
 
+
 export default function Prereq() {
   const [students, setStudents] = useState<any[]>([]);
-
+  const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,13 +19,15 @@ export default function Prereq() {
     try {
       const studentInfo = await extractInfo(file);
       console.log('Extracted courses:', studentInfo);
-      
-      // For now, just set a demo student to show the table
       setStudents((students) => [...students, studentInfo]);
     } catch (error) {
       console.error('Error parsing PDF:', error);
       alert('Error parsing PDF file: ' + error);
     }
+  };
+
+  const toggleRow = (index: number) => {
+    setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   return (
@@ -54,6 +57,7 @@ export default function Prereq() {
           <table className="prereq-table">
             <thead>
               <tr>
+                <th></th>
                 <th>Student ID</th>
                 <th>Name</th>
                 <th>Status</th>
@@ -61,11 +65,48 @@ export default function Prereq() {
             </thead>
             <tbody>
               {students.map((student, index) => (
-                <tr key={index}>
-                  <td>{student.id}</td>
-                  <td>{student.name || 'N/A'}</td>
-                  <td>{student.courses.length} courses loaded</td>
-                </tr>
+                <Fragment key={student.id}>
+                  <tr>
+                    <td>
+                      <button
+                        onClick={() => toggleRow(index)}
+                        aria-label={openRows[index] ? 'Hide courses' : 'Show courses'}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.2em' }}
+                      >
+                        {openRows[index] ? '▼' : '▶'}
+                      </button>
+                    </td>
+                    <td>{student.id}</td>
+                    <td>{student.name || 'N/A'}</td>
+                    <td>{student.courses.length} courses loaded</td>
+                  </tr>
+                  {openRows[index] && (
+                    <tr>
+                      <td colSpan={4}>
+                        <table style={{ width: '100%', background: '#f9f9f9', margin: '0.5em 0' }}>
+                          <thead>
+                            <tr>
+                              <th>Code</th>
+                              <th>Title</th>
+                              <th>Units</th>
+                              <th>Grade</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {student.courses.map((course: any) => (
+                              <tr key={course.code}>
+                                <td>{course.code}</td>
+                                <td>{course.title}</td>
+                                <td>{course.units}</td>
+                                <td>{course.grade ?? 'N/A'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

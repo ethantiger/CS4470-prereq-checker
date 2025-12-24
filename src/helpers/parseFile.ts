@@ -7,7 +7,6 @@ async function extractText(file: File): Promise<string> {
   const pdfParser = new PDFParse({data: await file.arrayBuffer()});
 
   const textResult = await pdfParser.getText();
-  console.log(textResult.text)
   return textResult.text;
 }
 
