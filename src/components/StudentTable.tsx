@@ -1,7 +1,7 @@
 import { useState, Fragment } from 'react';
 
 import { useStudents } from '@/stores/useStudent';
-import { Student } from 'src/types';
+import './StudentTable.css';
 
 export default function StudentTable() {
   const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
@@ -12,8 +12,8 @@ export default function StudentTable() {
   };
 
   return (
-    <div className="prereq-table-card">
-      <table className="prereq-table">
+    <div className="table-card">
+      <table className="table">
         <thead>
           <tr>
             <th></th>
