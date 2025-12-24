@@ -13,17 +13,17 @@ export default function UploadFile() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const file = files[0];
-    console.log('File selected:', file.name);
-
-    try {
-      const studentInfo = await extractInfo(file);
-      console.log('Extracted courses:', studentInfo);
-      addStudent(studentInfo);
-    } catch (error) {
-      console.error('Error parsing PDF:', error);
-      alert('Error parsing PDF file: ' + error);
+    for (const file of Array.from(files)) {
+      try {
+        const studentInfo = await extractInfo(file);
+        console.log('Extracted courses:', studentInfo);
+        addStudent(studentInfo);
+      } catch (error) {
+        console.error('Error parsing PDF:', error);
+        alert('Error parsing PDF file: ' + error);
+      }
     }
+    
   };
 
   return (
@@ -38,6 +38,7 @@ export default function UploadFile() {
         ref={fileInputRef}
         onChange={handleFileUpload}
         style={{ display: 'none' }}
+        multiple
       />
       <button
         onClick={() => fileInputRef.current?.click()}
