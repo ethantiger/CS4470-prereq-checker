@@ -1,8 +1,11 @@
 import { useState, Fragment } from 'react';
+
+import { useStudents } from '@/stores/useStudent';
 import { Student } from 'src/types';
 
-export default function StudentTable({ students }: { students: Student[]}) {
+export default function StudentTable() {
   const [openRows, setOpenRows] = useState<{ [key: number]: boolean }>({});
+  const students = useStudents();
 
   const toggleRow = (index: number) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));

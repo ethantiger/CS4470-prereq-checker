@@ -1,12 +1,13 @@
 import { useRef } from "react";
 import { IconFileUpload } from '@tabler/icons-react';
 
+import { useStudentActions } from "@/stores/useStudent";
 import { extractInfo } from '@/helpers/parseFile';
 import './UploadFile.css';
-import { Student } from "../types";
 
-export default function UploadFile({ setStudents }: { setStudents: React.Dispatch<React.SetStateAction<Student[]>> }) {
+export default function UploadFile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addStudent } = useStudentActions();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -18,7 +19,7 @@ export default function UploadFile({ setStudents }: { setStudents: React.Dispatc
     try {
       const studentInfo = await extractInfo(file);
       console.log('Extracted courses:', studentInfo);
-      setStudents((students) => [...students, studentInfo]);
+      addStudent(studentInfo);
     } catch (error) {
       console.error('Error parsing PDF:', error);
       alert('Error parsing PDF file: ' + error);
