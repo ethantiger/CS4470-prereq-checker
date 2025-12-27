@@ -1,0 +1,23 @@
+.table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 16px;
+  text-align: left;
+  color: #475569;
+  font-weight: 600;
+  background: #f1f5f9;
+}
+
+.table td {
+  padding: 16px;
+}
