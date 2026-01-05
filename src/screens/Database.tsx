@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CoursesDatabase } from '../types';
+import CourseTable from '../components/CourseTable';
 
 export default function Database() {
   const [courses, setCourses] = useState<CoursesDatabase>({});
@@ -34,10 +35,25 @@ export default function Database() {
   };
 
   return (
-    <div>
-      <h1>Database Screen</h1>
-      <button onClick={addExampleCourse}>Add Example Course</button>
-      <pre>{JSON.stringify(courses, null, 2)}</pre>
+    <div style={{ padding: '2em' }}>
+      {/* <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <button 
+          onClick={addExampleCourse}
+          style={{
+            padding: '0.75em 1.5em',
+            background: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1em',
+            fontWeight: 600
+          }}
+        >
+          Add Example Course
+        </button>
+      </div> */}
+      <CourseTable courses={courses} />
     </div>
   );
 }
