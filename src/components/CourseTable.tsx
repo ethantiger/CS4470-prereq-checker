@@ -1,4 +1,5 @@
 import { useState, Fragment } from 'react';
+import { IconCaretRightFilled, IconCaretDownFilled } from '@tabler/icons-react';
 import { CoursesDatabase, Prereq } from '@/types';
 import './CourseTable.css';
 
@@ -68,10 +69,10 @@ export default function CourseTable({ courses }: CourseTableProps) {
                     aria-label={openRows[courseCode] ? 'Hide details' : 'Show details'}
                     style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.2em' }}
                   >
-                    {openRows[courseCode] ? '▼' : '▶'}
+                    {openRows[courseCode] ? <IconCaretDownFilled /> : <IconCaretRightFilled />}
                   </button>
                 </td>
-                <td><strong>{courseCode}</strong></td>
+                <td>{courseCode}</td>
                 <td>{courseData.prereqs.length} requirement(s)</td>
                 <td>{courseData.antireqs.length > 0 ? courseData.antireqs.join(', ') : 'None'}</td>
               </tr>

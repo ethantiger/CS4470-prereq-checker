@@ -35,7 +35,7 @@ export default function Database() {
   };
 
   return (
-    <div style={{ padding: '2em' }}>
+    <div style={{ padding: '40px' }}>
       {/* <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button 
           onClick={addExampleCourse}
