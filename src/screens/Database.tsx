@@ -15,28 +15,51 @@ export default function Database() {
   };
 
   const addExampleCourse = async () => {
-    await window.database.addCourse('CS4470', {
+    await window.database.addCourse('Computer Science 4470', {
       prereqs: [
         {
-          type: 'single',
-          course: 'CS2510',
-          grade: 'C'
+          requirements: [
+            {
+              course: 'Computer Science 3307',
+              grade: 60
+            }
+          ],
+          credits: 0.5
         },
         {
-          type: 'group',
-          courses: ['CS3000', 'CS3500'],
-          grade: 'C-',
-          credits: 4
+          requirements: [
+            {
+              course: 'Computer Science 3305',
+              grade: 60
+            },
+            {
+              course: 'Computer Science 3331',
+              grade: 60
+            },
+            {
+              course: 'Computer Science 3340',
+              grade: 60
+            },
+            {
+              course: 'Computer Science 3342',
+              grade: 60
+            },
+            {
+              course: 'Computer Science 3350',
+              grade: 60
+            }
+          ],
+          credits: 1.5
         }
       ],
-      antireqs: ['CS4471']
+      antireqs: ['Computer Science 3380', 'Computer Science 4460', 'Computer Science 4480', 'Computer Science 4490', 'Software Engineering 4453']
     });
     await loadCourses();
   };
 
   return (
     <div style={{ padding: '40px' }}>
-      {/* <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button 
           onClick={addExampleCourse}
           style={{
@@ -52,7 +75,7 @@ export default function Database() {
         >
           Add Example Course
         </button>
-      </div> */}
+      </div>
       <CourseTable courses={courses} />
     </div>
   );

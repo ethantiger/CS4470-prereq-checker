@@ -15,25 +15,13 @@ export default function CourseTable({ courses }: CourseTableProps) {
   };
 
   const renderPrereq = (prereq: Prereq, index: number) => {
-    if (prereq.type === 'single') {
-      return (
-        <tr key={index}>
-          <td>Single</td>
-          <td>{prereq.course}</td>
-          <td>{prereq.grade}</td>
-          <td>-</td>
-        </tr>
-      );
-    } else {
-      return (
-        <tr key={index}>
-          <td>Group</td>
-          <td>{prereq.courses.join(', ')}</td>
-          <td>{prereq.grade}</td>
-          <td>{prereq.credits} units</td>
-        </tr>
-      );
-    }
+    return (
+      <tr key={index}>
+        <td>{prereq.requirements.map(r => r.course).join('\n')}</td>
+        <td>{prereq.requirements.map(r => r.grade).join(', ')}</td>
+        <td>{prereq.credits} units</td>
+      </tr>
+    );
   };
 
   const courseEntries = Object.entries(courses);
@@ -85,7 +73,6 @@ export default function CourseTable({ courses }: CourseTableProps) {
                         <table style={{ width: '100%', background: '#f9f9f9', margin: '0.5em 0' }}>
                           <thead>
                             <tr>
-                              <th>Type</th>
                               <th>Course(s)</th>
                               <th>Min Grade</th>
                               <th>Credits</th>

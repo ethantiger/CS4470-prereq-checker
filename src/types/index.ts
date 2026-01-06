@@ -12,21 +12,15 @@ export interface Course {
   grade: number | null;
 }
 
-// Database types for course prerequisites
-export interface SinglePrereq {
-  type: 'single';
-  course: string;
-  grade: string;
-}
-
-export interface GroupPrereq {
-  type: 'group';
-  courses: string[];
-  grade: string;
+export interface Prereq {
+  requirements: Requirement[];
   credits: number;
 }
 
-export type Prereq = SinglePrereq | GroupPrereq;
+export interface Requirement {
+  course: string;
+  grade: number;
+}
 
 export interface CourseData {
   prereqs: Prereq[];
