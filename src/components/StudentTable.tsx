@@ -1,5 +1,6 @@
 import { useState, Fragment } from 'react';
 
+import { IconCaretRightFilled, IconCaretDownFilled } from '@tabler/icons-react';
 import { useStudents } from '@/stores/useStudent';
 import './StudentTable.css';
 
@@ -32,7 +33,7 @@ export default function StudentTable() {
                     aria-label={openRows[index] ? 'Hide courses' : 'Show courses'}
                     style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.2em' }}
                   >
-                    {openRows[index] ? '▼' : '▶'}
+                    {openRows[index] ? <IconCaretDownFilled /> : <IconCaretRightFilled />}
                   </button>
                 </td>
                 <td>{student.id}</td>

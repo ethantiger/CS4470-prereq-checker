@@ -11,3 +11,22 @@ export interface Course {
   units: number | null;
   grade: number | null;
 }
+
+export interface Prereq {
+  requirements: Requirement[];
+  credits: number;
+}
+
+export interface Requirement {
+  course: string;
+  grade: number;
+}
+
+export interface CourseData {
+  prereqs: Prereq[];
+  antireqs: string[];
+}
+
+export interface CoursesDatabase {
+  [course: string]: CourseData;
+}
