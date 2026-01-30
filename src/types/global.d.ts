@@ -1,4 +1,4 @@
-import { CoursesDatabase, CourseData } from './index';
+import { CoursesDatabase, CourseData, Student } from './index';
 
 declare global {
   interface Window {
@@ -9,6 +9,15 @@ declare global {
       updateCourse: (courseCode: string, courseData: CourseData) => Promise<void>;
       deleteCourse: (courseCode: string) => Promise<void>;
       importCourses: (courses: CoursesDatabase) => Promise<void>;
+    };
+    studentDatabase: {
+      getAllStudents: () => Promise<Student[]>;
+      getStudent: (studentId: number) => Promise<Student | null>;
+      addStudent: (student: Student) => Promise<void>;
+      updateStudent: (studentId: number, student: Student) => Promise<void>;
+      deleteStudent: (studentId: number) => Promise<void>;
+      importStudents: (students: Student[]) => Promise<void>;
+      clearAllStudents: () => Promise<void>;
     };
   }
 }

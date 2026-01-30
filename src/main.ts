@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import { JSONDatabase } from './helpers/database';
+import { StudentJSONDatabase } from './helpers/studentDatabase';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -9,6 +10,7 @@ if (started) {
 }
 
 const db = new JSONDatabase();
+const studentDb = new StudentJSONDatabase();
 
 const createWindow = () => {
   // Create the browser window.
@@ -40,8 +42,9 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
   await db.initialize();
+  await studentDb.initialize();
   
-  // Register IPC handlers
+  // Register IPC handlers for courses
   ipcMain.handle('db:getAllCourses', () => db.getAllCourses());
   ipcMain.handle('db:getCourse', (_, courseCode) => db.getCourse(courseCode));
   ipcMain.handle('db:addCourse', (_, courseCode, courseData) => 
@@ -51,13 +54,26 @@ app.on('ready', async () => {
   ipcMain.handle('db:deleteCourse', (_, courseCode) => db.deleteCourse(courseCode));
   ipcMain.handle('db:importCourses', (_, courses) => db.importCourses(courses));
   
+  // Register IPC handlers for students
+  ipcMain.handle('students:getAll', () => studentDb.getAllStudents());
+  ipcMain.handle('students:get', (_, studentId) => studentDb.getStudent(studentId));
+  ipcMain.handle('students:add', (_, student) => studentDb.addStudent(student));
+  ipcMain.handle('students:update', (_, studentId, student) => 
+    studentDb.updateStudent(studentId, student));
+  ipcMain.handle('students:delete', (_, studentId) => studentDb.deleteStudent(studentId));
+  ipcMain.handle('students:import', (_, students) => studentDb.importStudents(students));
+  ipcMain.handle('students:clear', () => studentDb.clearAllStudents());
+  
   createWindow();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  // Clear student database on app close
+  await studentDb.clearAllStudents();
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }
