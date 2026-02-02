@@ -8,7 +8,7 @@ async function extractText(file: File): Promise<string> {
 
   const textResult = await pdfParser.getText();
   const text = textResult.text;
-  
+
   // Check if the PDF is empty
   if (!text || text.trim().length < 10) {
     throw new Error('PDF appears to be empty or corrupted');
@@ -76,55 +76,29 @@ function findStudentName(text: string): string | null {
 }
 
 function splitByStudentID(text: string): string[] {
-  // First try to split by actual student IDs
-  const studentIdPattern = /^\d{9}/gm;
-  const studentIdMatches = [...text.matchAll(studentIdPattern)];
-  
-  if (studentIdMatches.length > 0) {
-    // Use original logic for non-redacted PDFs
-    const segments: string[] = [];
-    for (let i = 0; i < studentIdMatches.length; i++) {
-      const startIndex = studentIdMatches[i].index!;
-      const endIndex = i < studentIdMatches.length - 1 ? studentIdMatches[i + 1].index! : text.length;
-      segments.push(text.slice(startIndex, endIndex));
+  const newPagePattern = /(?<studentId>\d{5,9})\s+THE UNIVERSITY OF WESTERN ONTARIO/g
+  const pages = [...text.matchAll(newPagePattern)];
+
+  const segments: string[] = [];
+  let currentStudentId = pages[0].groups!.studentId;
+  let currentStudentStart = pages[0].index!;
+  for (let i = 1; i < pages.length; i++) {
+    if (pages[i].groups!.studentId !== currentStudentId) {
+      const endIndex = pages[i].index!;
+      segments.push(text.slice(currentStudentStart, endIndex));
+      currentStudentId = pages[i].groups!.studentId;
+      currentStudentStart = pages[i].index!;
     }
-    return segments;
   }
-  
-  // If no student IDs found split by "Page : X" markers (for redacted PDFs)
-  const pageMarkerPattern = /Page\s*:\s*(\d+)/gm;
-  const pageMatches = [...text.matchAll(pageMarkerPattern)];
-  
-  if (pageMatches.length > 0) {
-    const segments: string[] = [];
-    let currentStudentStart = pageMatches[0].index!;
-    let lastPageNum = 0;
-    
-    for (let i = 0; i < pageMatches.length; i++) {
-      const pageNum = Number(pageMatches[i][1]);
-      
-      // If page number resets to 1 (and we're not at the first page), start a new student
-      if (pageNum === 1 && lastPageNum > 0) {
-        const endIndex = pageMatches[i].index!;
-        segments.push(text.slice(currentStudentStart, endIndex));
-        currentStudentStart = pageMatches[i].index!;
-      }
-      
-      lastPageNum = pageNum;
-    }
-    
-    segments.push(text.slice(currentStudentStart, text.length));
-    
-    return segments;
-  }
-  
-  return [text];
+  segments.push(text.slice(currentStudentStart, text.length));
+  return segments;
 }
 
 async function extractInfo(file: File) {
   try {
     const text = await extractText(file);
     const segments = splitByStudentID(text);
+    console.log("Segments:", segments)
     
     if (segments.length === 0 || segments.every(s => s.trim().length === 0)) {
       throw new Error('No student data found in PDF');
