@@ -1,32 +1,29 @@
-export interface Student {
-  id: number;
-  name: string;
-  courses: Course[];
-}
-
-export interface Course {
-  code: string;
-  campus: string;
-  title: string;
-  units: number | null;
-  grade: number | null;
-}
-
-export interface Prereq {
-  requirements: Requirement[];
-  credits: number;
-}
-
-export interface Requirement {
-  course: string;
-  grade: number;
-}
+export type PrereqNode =
+  | {
+      type: "AND" | "OR";
+      requirements: PrereqNode[];
+    }
+  | {
+      type: "COURSE";
+      name: string;
+      minGrade?: number;
+    }
+  | {
+      type: "REGISTRATION";
+      program: string;
+    }
+  | {
+      type: "STATUS";
+      name: string;
+    };
 
 export interface CourseData {
-  prereqs: Prereq[];
+  credits: number;
+  prereqs: PrereqNode | [];
   antireqs: string[];
 }
 
-export interface CoursesDatabase {
-  [course: string]: CourseData;
+export interface CoursesFile {
+  program: string;
+  courses: Record<string, CourseData>;
 }

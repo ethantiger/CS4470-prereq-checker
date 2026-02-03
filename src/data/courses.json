@@ -1,0 +1,1309 @@
+{
+    "program": "Computer Science",
+    "courses": {
+      "COMPSCI 1020": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "AND",
+          "requirements": [
+            {
+              "type": "OR",
+              "requirements": [
+                {
+                  "type": "AND",
+                  "requirements": [
+                    { 
+                        "type": "COURSE", 
+                        "name": "Ontario Secondary School MHF4U" 
+                    },
+                    { 
+                        "type": "COURSE", 
+                        "name": "Ontario Secondary School MCV4U" 
+                    }
+                  ]
+                },
+                {
+                  "type": "COURSE",
+                  "name": "Mathematics 0110"
+                }
+              ]
+            },
+            {
+              "type": "OR",
+              "requirements": [
+                {
+                  "type": "REGISTRATION",
+                  "program": "Computer Science"
+                },
+                {
+                  "type": "STATUS",
+                  "name": "First-year requirements completed"
+                }
+              ]
+            }
+          ]
+        },
+        "antireqs": []
+      },
+  
+      "COMPSCI 1025": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": [
+          "COMPSCI 1026",
+          "COMPSCI 2120",
+          "DATASCI 1200",
+          "ENGSCI 1036",
+          "DH 2220"
+        ]
+      },
+  
+      "COMPSCI 1026": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": [
+          "COMPSCI 1025",
+          "COMPSCI 2120",
+          "DATASCI 1200",
+          "ENGSCI 1036",
+          "DH 2220"
+        ]
+      },
+  
+      "COMPSCI 1027": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "OR",
+          "requirements": [
+            { "type": "COURSE", "name": "COMPSCI 1025", "minGrade": 65 },
+            { "type": "COURSE", "name": "COMPSCI 1026", "minGrade": 65 },
+            { "type": "COURSE", "name": "DATASCI 1200", "minGrade": 65 },
+            { "type": "COURSE", "name": "ENGSCI 1036", "minGrade": 65 }
+          ]
+        },
+        "antireqs": [
+          "COMPSCI 1037",
+          "COMPSCI 2121",
+          "DH 2221"
+        ]
+      },
+  
+      "COMPSCI 1032": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": [
+          "MOS 1033"
+        ]
+      },
+  
+      "COMPSCI 1033": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": []
+      },
+  
+      "COMPSCI 1037": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "COURSE",
+          "name": "ENGSCI 1036"
+        },
+        "antireqs": [
+          "COMPSCI 1027",
+          "COMPSCI 2121",
+          "DH 2221"
+        ]
+      },
+  
+      "COMPSCI 1046": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": [
+          "COMPSCI 1025",
+          "COMPSCI 1026",
+          "COMPSCI 2120",
+          "DATASCI 1200",
+          "ENGSCI 1036",
+          "SE 2202"
+        ]
+      },
+      
+    "COMPSCI 2033": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "COURSE",
+          "name": "COMPSCI 1033",
+          "minGrade": 60
+        },
+        "antireqs": [
+          "MEDIACOM 2570",
+          "DIGICOM 2203"
+        ]
+      },
+
+      "COMPSCI 2035": {
+          "credits": 0.5,
+          "prereqs": {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "APPLMATH 1201", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1000", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1301", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1500", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1501", "minGrade": 60 },
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 },
+              { "type": "COURSE", "name": "INTRODUCTORY STATISTICS", "minGrade": 60 }
+            ]
+          },
+          "antireqs": [
+            "EARTHSCI 2222"
+        ]
+      },
+
+      "COMPSCI 2120": {
+        "credits": 0.5,
+        "prereqs": [],
+        "antireqs": [
+          "COMPSCI 1025",
+          "COMPSCI 1026",
+          "DATASCI 1200",
+          "ENGSCI 1036",
+          "DH 2220"
+        ]
+      },
+
+      "COMPSCI 2121": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "AND",
+          "requirements": [
+            {
+              "type": "OR",
+              "requirements": [
+                { "type": "COURSE", "name": "COMPSCI 2120", "minGrade": 60 },
+                { "type": "COURSE", "name": "DH 2220", "minGrade": 60 },
+                { "type": "COURSE", "name": "COMPSCI 1026", "minGrade": 60 }
+              ]
+            },
+            {
+              "type": "REGISTRATION",
+              "program": "Medical Sciences First Entry"
+            },
+            {
+              "type": "PERMISSION",
+              "department": "Computer Science"
+            }
+          ]
+        },
+        "antireqs": [
+          "COMPSCI 1027",
+          "COMPSCI 1037",
+          "DH 2221"
+        ]
+      },
+
+      "COMPSCI 2208": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "AND",
+          "requirements": [
+            {
+              "type": "OR",
+              "requirements": [
+                { "type": "COURSE", "name": "COMPSCI 1027", "minGrade": 65 },
+                { "type": "COURSE", "name": "COMPSCI 1037", "minGrade": 65 }
+              ]
+            },
+            { "type": "COURSE", "name": "COMPSCI 1020", "minGrade": 60 }
+          ]
+        }
+      },
+
+      "COMPSCI 2209": {
+        "credits": 0.5,
+        "prereqs": {
+         "type": "AND",
+       "requirements": [
+        {
+          "type": "OR",
+          "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 1027", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 1037", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 2121", "minGrade": 65 },
+              { "type": "COURSE", "name": "DH 2221", "minGrade": 65 }
+            ]
+          },
+          { "type": "COURSE", "name": "COMPSCI 1020", "minGrade": 60 },
+          {
+            "type": "OR",
+            "credits": 1.0,
+            "requirements": [
+              { "type": "COURSE", "name": "APPLMATH 1201", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1000", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1301", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1500", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1501", "minGrade": 60 },
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 }
+            ]
+          }
+        ]
+      }
+    },
+
+    "COMPSCI 2210": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 1027", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 1037", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 2101", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 2121", "minGrade": 65 },
+              { "type": "COURSE", "name": "DH 2221", "minGrade": 65 }
+            ]
+          },
+          {
+            "type": "OR",
+            "credits": 1.0,
+            "requirements": [
+              { "type": "COURSE", "name": "APPLMATH 1201", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1000", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1301", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1500", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1501", "minGrade": 60 },
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "SE 2205"
+      ]
+    },
+
+    "COMPSCI 2211": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 1027", "minGrade": 65 },
+          { "type": "COURSE", "name": "COMPSCI 1037", "minGrade": 65 },
+          { "type": "COURSE", "name": "COMPSCI 2101", "minGrade": 65 }
+        ]
+      }
+    },
+
+    "COMPSCI 2212": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "SE 2203"
+      ]
+    },
+
+    "COMPSCI 2214": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 1027", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 1037", "minGrade": 65 },
+              { "type": "COURSE", "name": "COMPSCI 2121", "minGrade": 65 },
+              { "type": "COURSE", "name": "DH 2221", "minGrade": 65 }
+            ]
+          },
+          { "type": "COURSE", "name": "COMPSCI 1020", "minGrade": 60 },
+          {
+            "type": "OR",
+            "credits": 1.0,
+            "requirements": [
+              { "type": "COURSE", "name": "APPLMATH 1201", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1000", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1301", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1500", "minGrade": 60 },
+              { "type": "COURSE", "name": "CALCULUS 1501", "minGrade": 60 },
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "MATH 2151",
+        "MATH 2155"
+      ]
+    },
+
+    "COMPSCI 3120": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2121", "minGrade": 60 },
+          { "type": "COURSE", "name": "DH 2221", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3319",
+        "SE 3309",
+        "DH 3220"
+      ]
+    },
+
+    "COMPSCI 3121": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 2121",
+        "minGrade": 60
+      },
+      "antireqs": [
+        "COMPSCI 3346"
+      ]
+    },
+
+    "COMPSCI 3305": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2208", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2101", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2208", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+              { "type": "COURSE", "name": "ECE 3375", "minGrade": 60 },
+              {
+                "type": "OR",
+                "requirements": [
+                  {
+                    "type": "REGISTRATION",
+                    "program": "Computer Engineering",
+                    "year": 4
+                  },
+                  {
+                    "type": "REGISTRATION",
+                    "program": "Mechatronic Systems Engineering",
+                    "year": 4
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "SE 3313"
+      ]
+    },
+
+    "COMPSCI 3307": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "COURSE",
+            "name": "COMPSCI 2212",
+            "minGrade": 60
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+              { "type": "COURSE", "name": "ECE 3375", "minGrade": 60 },
+              {
+                "type": "OR",
+                "requirements": [
+                  {
+                    "type": "REGISTRATION",
+                    "program": "Computer Engineering",
+                    "year": 4
+                  },
+                  {
+                    "type": "REGISTRATION",
+                    "program": "Mechatronic Systems Engineering",
+                    "year": 4
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "SE 3350"
+      ]
+    },
+
+    "COMPSCI 3319": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "AISE 3309",
+        "COMPSCI 3120",
+        "DH 3220",
+        "SE 3309"
+      ]
+    },
+
+    "COMPSCI 3331": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2214", "minGrade": 60 },
+          { "type": "COURSE", "name": "MATH 2155", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 3333": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2208", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2209", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2212", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 3340": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+              {
+                "type": "OR",
+                "requirements": [
+                  { "type": "COURSE", "name": "COMPSCI 2214", "minGrade": 60 },
+                  { "type": "COURSE", "name": "MATH 2155", "minGrade": 60 }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "REGISTRATION",
+            "program": "Artificial Intelligence Systems Engineering",
+            "year": 4
+          },
+          {
+            "type": "REGISTRATION",
+            "program": "Computer Engineering",
+            "year": 4
+          }
+        ]
+      }
+    },
+
+    "COMPSCI 3342": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+          { "type": "COURSE", "name": "SE 3313", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 3346": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "SE 2203", "minGrade": 60 },
+              { "type": "COURSE", "name": "SE 2205", "minGrade": 60 },
+              { "type": "COURSE", "name": "SE 2250", "minGrade": 60 }
+            ]
+          },
+          { "type": "COURSE", "name": "COMPSCI 2209", "minGrade": 60 },
+          {
+            "type": "REGISTRATION",
+            "program": "Computer Engineering"
+          },
+          {
+            "type": "REGISTRATION",
+            "program": "Mechatronic Systems Engineering"
+          },
+          {
+            "type": "REGISTRATION",
+            "program": "Software Engineering"
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3121"
+      ]
+    },
+
+    "COMPSCI 3350": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2208", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2209", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2101", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "ECE 3375"
+      ]
+    },
+
+    "COMPSCI 3357": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2210", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "ECE 4436",
+        "AISE 4430"
+      ]
+    },
+
+    "COMPSCI 3377": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "REGISTRATION",
+        "year": 3,
+        "department": "Computer Science"
+      },
+      "antireqs": [
+        "SCIENCE 3377",
+        "SE 3351"
+      ]
+    },
+
+    "COMPSCI 3380": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 2212", "minGrade": 60 },
+          {
+            "type": "REGISTRATION",
+            "program": "Computer Science"
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4460",
+        "COMPSCI 4470",
+        "COMPSCI 4480",
+        "COMPSCI 4490"
+      ]
+    },
+
+    "COMPSCI 3388": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2211", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 2101", "minGrade": 60 },
+              {
+                "type": "AND",
+                "requirements": [
+                  { "type": "COURSE", "name": "SE 2203", "minGrade": 60 },
+                  { "type": "COURSE", "name": "SE 2205", "minGrade": 60 },
+                  { "type": "COURSE", "name": "SE 2250", "minGrade": 60 }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 },
+              { "type": "COURSE", "name": "NMM 1411", "minGrade": 60 },
+              { "type": "COURSE", "name": "APPLMATH 1411", "minGrade": 60 }
+            ]
+          }
+        ]
+      }
+    },
+
+    "COMPSCI 4402": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+              { "type": "COURSE", "name": "SOFTENG 3310", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 },
+              { "type": "COURSE", "name": "ECE 3375", "minGrade": 60 }
+            ]
+          }
+        ]
+      }
+    },
+
+    "COMPSCI 4411": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3319", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3120", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 4413": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3340",
+        "minGrade": 60
+      }
+    },
+
+    "COMPSCI 4416": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "DATASCI 3000", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 4437", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 4417": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "AISE 3309", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3319", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4433"
+      ]
+    },
+
+    "COMPSCI 4418": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "DATASCI 3000", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 4437", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 4433": {
+      "credits": 1.0,
+      "prereqs": {
+        "type": "CREDITS_FROM",
+        "credits": 2.0,
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 4434": {
+      "credits": 1.0,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3357", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4457"
+      ]
+    },
+
+    "COMPSCI 4435": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3357", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4436": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "MIN_COURSES",
+        "minCourses": 2,
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4437": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "MIN_COURSES",
+        "minCourses": 2,
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4438": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "MIN_COURSES",
+        "minCourses": 2,
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4445": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "SOFTENG 2205", "minGrade": 60 },
+              { "type": "COURSE", "name": "SOFTENG 3310", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4446": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          { "type": "COURSE", "name": "SOFTENG 3310", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4438",
+        "SOFTENG 3314"
+      ]
+    },
+
+    "COMPSCI 4447": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4451": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "DATASCI 3000",
+        "minGrade": 60
+      },
+      "antireqs": [
+        "COMPSCI 4442"
+      ]
+    },
+
+    "COMPSCI 4452": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "DATASCI 3000",
+        "minGrade": 60
+      },
+      "antireqs": [
+        "COMPSCI 4442"
+      ]
+    },
+
+    "COMPSCI 4453": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "DATASCI 3000",
+        "minGrade": 60
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4457": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3357",
+        "minGrade": 60
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4458": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+              { "type": "COURSE", "name": "SOFTENG 3313", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3357", "minGrade": 60 },
+              { "type": "COURSE", "name": "ECE 4436", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4434",
+        "COMPSCI 4457"
+      ]
+    },
+
+    "COMPSCI 4459": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3357", "minGrade": 60 },
+          { "type": "COURSE", "name": "ECE 4436", "minGrade": 60 },
+          { "type": "COURSE", "name": "SOFTENG 3313", "minGrade": 60 },
+          { "type": "COURSE", "name": "SOFTENG 3314", "minGrade": 60 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4435"
+      ]
+    },
+
+    "COMPSCI 4460": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "BIOC 2280", "minGrade": 60 },
+              { "type": "COURSE", "name": "CHEM 2213", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3319", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3346", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3380",
+        "COMPSCI 4470",
+        "COMPSCI 4480",
+        "COMPSCI 4490"
+      ]
+    },
+
+    "COMPSCI 4461": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 }
+        ]
+      }
+    },
+
+    "COMPSCI 4463": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 }
+            ]
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "SOFTENG 2205", "minGrade": 60 },
+              { "type": "COURSE", "name": "SOFTENG 3310", "minGrade": 60 }
+            ]
+          }
+        ]
+      }
+    },
+
+    "COMPSCI 4470": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          {
+            "type": "MIN_COURSES",
+            "mincourses": 1.5,
+            "courses": [
+              "COMPSCI 3305",
+              "COMPSCI 3331",
+              "COMPSCI 3340",
+              "COMPSCI 3342",
+              "COMPSCI 3350"
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3380",
+        "COMPSCI 4460",
+        "COMPSCI 4480",
+        "COMPSCI 4490",
+        "SOFTENG 4453"
+      ]
+    },
+
+    "COMPSCI 4471": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3307",
+        "minGrade": 70
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4472": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3307",
+        "minGrade": 0
+      },
+      "antireqs": [
+        "SOFTENG 4452",
+        "SOFTENG 4453"
+      ]
+    },
+
+    "COMPSCI 4473": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3307",
+        "minGrade": 60
+      },
+      "antireqs": [
+        "SOFTENG 3352"
+      ]
+    },
+
+    "COMPSCI 4474": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "COURSE",
+        "name": "COMPSCI 3307",
+        "minGrade": 60
+      },
+      "antireqs": [
+        "SOFTENG 3353"
+      ]
+    },
+
+    "COMPSCI 4475": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 0 }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4438"
+      ]
+    },
+
+    "COMPSCI 4476": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 0 },
+          { "type": "PERMISSION", "source": "Department" }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 4437"
+      ]
+    },
+
+    "COMPSCI 4478": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 70 },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 2212", "minGrade": 70 },
+              { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 70 }
+            ]
+          }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4480": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          { "type": "REGISTRATION", "program": "Game Development" }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3380",
+        "COMPSCI 4460",
+        "COMPSCI 4470",
+        "COMPSCI 4490"
+      ]
+    },
+
+    "COMPSCI 4481": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4482": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "AND",
+        "requirements": [
+          {
+            "type": "OR",
+            "requirements": [
+              {
+                "type": "AND",
+                "requirements": [
+                  { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+                  { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+                  { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 }
+                ]
+              },
+              {
+                "type": "AND",
+                "requirements": [
+                  { "type": "COURSE", "name": "SOFTENG 2205", "minGrade": 60 },
+                  { "type": "COURSE", "name": "SOFTENG 3310", "minGrade": 60 },
+                  { "type": "COURSE", "name": "SOFTENG 3313", "minGrade": 60 },
+                  { "type": "COURSE", "name": "SOFTENG 3350", "minGrade": 60 }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "OR",
+            "requirements": [
+              { "type": "COURSE", "name": "MATH 1600", "minGrade": 60 },
+              { "type": "COURSE", "name": "APPMATH 1411", "minGrade": 60 }
+            ]
+          }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4483": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+          { "type": "COURSE", "name": "SOFTENG 3350", "minGrade": 60 }
+        ]
+      },
+      "antireqs": []
+    },
+
+    "COMPSCI 4490": {
+      "credits": 0.5,
+      "prereqs": {
+        "type": "OR",
+        "requirements": [
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3342", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3350", "minGrade": 60 },
+              { "type": "SPECIALIZATION", "name": "Honours Computer Science" }
+            ]
+          },
+          {
+            "type": "AND",
+            "requirements": [
+              { "type": "COURSE", "name": "COMPSCI 3305", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3307", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3319", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3331", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3340", "minGrade": 60 },
+              { "type": "COURSE", "name": "COMPSCI 3357", "minGrade": 60 },
+              { "type": "SPECIALIZATION", "name": "Honours Information Systems" }
+            ]
+          }
+        ]
+      },
+      "antireqs": [
+        "COMPSCI 3380",
+        "COMPSCI 4460",
+        "COMPSCI 4470",
+        "COMPSCI 4480"
+      ]
+    }    
+  }
+}
+  
