@@ -3,7 +3,7 @@ import { create } from 'zustand';
 
 interface StudentStoreActions {
   addStudent: (student: Student) => void;
-  loadStudents: () => Promise<void>;
+  addStudents: (students: Student[]) => void;
   clearStudents: () => void;
   deleteStudent: (studentId: number) => void;
 }
@@ -17,41 +17,20 @@ const useStudentStore = create<StudentState>()(
   (set, get) => ({
     students: [],
     actions: {
-      addStudent: async (student) => {
+      addStudent: (student) => {
         const { students } = get();
-        set({ students: students ? [...students, student] : [student] });
-        
-        // Persist to database
-        try {
-          await window.studentDatabase.addStudent(student);
-        } catch (error) {
-          console.error('Failed to save student to database:', error);
-        }
+        set({ students: [...students, student] });
       },
-      loadStudents: async () => {
-        try {
-          const students = await window.studentDatabase.getAllStudents();
-          set({ students: students || [] });
-        } catch (error) {
-          console.error('Failed to load students from database:', error);
-        }
+      addStudents: (newStudents) => {
+        const { students } = get();
+        set({ students: [...students, ...newStudents] });
       },
-      clearStudents: async () => {
+      clearStudents: () => {
         set({ students: [] });
-        try {
-          await window.studentDatabase.clearAllStudents();
-        } catch (error) {
-          console.error('Failed to clear students from database:', error);
-        }
       },
-      deleteStudent: async (studentId: number) => {
+      deleteStudent: (studentId: number) => {
         const { students } = get();
         set({ students: students.filter(s => s.id !== studentId) });
-        try {
-          await window.studentDatabase.deleteStudent(studentId);
-        } catch (error) {
-          console.error('Failed to delete student from database:', error);
-        }
       },
     }
   }),
