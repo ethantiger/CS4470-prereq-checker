@@ -30,3 +30,7 @@ export interface CourseData {
 export interface CoursesDatabase {
   [course: string]: CourseData;
 }
+
+export interface AddCourse { // ADDED!!!!!!!
+
+}

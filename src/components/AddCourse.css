@@ -1,0 +1,193 @@
+.table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 16px;
+  text-align: left;
+  color: #475569;
+  font-weight: 600;
+  background: #f1f5f9;
+}
+
+.table td {
+  padding: 16px;
+}
+
+/* TYLER -- */
+.add-course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.primary-btn {
+  padding: 0.75em 1.5em;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.primary-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.secondary-btn {
+  padding: 0.25em 0.5em;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 300;
+}
+
+.remove_course_btn {
+  padding: 0.25em 0.5em;
+  color: #e06464;
+  border: none;
+  border-radius: 90px;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+.remove_group_btn {
+  padding: 0.125em 0.25em;
+  color: #e06464;
+  border: none;
+  border-radius: 90px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 300;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5em;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.form-field label {
+  margin-bottom: 0.25em;
+  font-weight: 600;
+  color: #475569;
+}
+
+.form-field input {
+  padding: 0.5em;
+  width: 200px;
+}
+
+.form-field input[type="number"] {
+  width: 200px;
+}
+
+/* Dropdown container */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 200px;
+  margin-top: 0.25em;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+/* Dropdown option buttons */
+.autocomplete-option {
+  width: 100%;
+  text-align: left;
+  padding: 0.5em 0.75em;
+  border: none;
+  background: white;
+  cursor: pointer;
+}
+
+/* hover effect */
+.autocomplete-option:hover {
+  background: #f1f5f9;
+}
+
+/* Container for antireq chips */
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0.5em 0 0.75em 0;
+}
+
+/* Individual chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.35em 0.6em;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e293b;
+  font-size: 0.9em;
+}
+
+/* Remove button inside chip */
+.chip-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.1em;
+  line-height: 1;
+  color: #475569;
+}
+
+
+
+
+.primary-btn:hover {
+  background: #2563eb;
+}
+
+.secondary-btn:hover {
+  background: #2563eb;
+}
+
+.chip:hover {
+  background: #dbeafe;
+}
+
+.chip-remove:hover { 
+  color: #1e293b;
+}
+
+

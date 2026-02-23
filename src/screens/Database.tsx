@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
 import { CoursesDatabase } from '../types';
 import CourseTable from '../components/CourseTable';
+import StudentTable from 'CS4470-prereq-checker/src/components/StudentTable';
+import AddCourse from '@/components/AddCourse';
+
+// AUTHOR: Tyler Larson
 
 export default function Database() {
   const [courses, setCourses] = useState<CoursesDatabase>({});
+  const [isAddingCourse, setIsAddingCourse] = useState(false);
+
 
   useEffect(() => {
     loadCourses();
@@ -13,6 +19,7 @@ export default function Database() {
     const data = await window.database.getAllCourses();
     setCourses(data);
   };
+
 
   const addExampleCourse = async () => {
     await window.database.addCourse('Computer Science 4470', {
@@ -57,26 +64,66 @@ export default function Database() {
     await loadCourses();
   };
 
+  const handleCourseAdded = async () => {
+    await loadCourses();           // refresh state from DB
+    setIsAddingCourse(false);      // go back to table
+  };
+
+
   return (
+    
     <div style={{ padding: '40px' }}>
+
       <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button 
+
+        <button disabled={isAddingCourse}// ADDED HERE ASWELL!!
+          //onClick={addNewCourse}
+          onClick={() => setIsAddingCourse(true)}
+          style={{
+            padding: '0.75em 1.5em',
+            background: isAddingCourse ? '#cbd5e1' : '#3b82f6',
+            color: isAddingCourse ? '#64748b' : 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: isAddingCourse ? 'not-allowed' : 'pointer',
+            fontSize: '1em',
+            fontWeight: 600,
+            opacity: isAddingCourse ? 0.7 : 1
+          }}
+        >
+          Add New Course
+        </button>
+
+
+        <button disabled={isAddingCourse}
           onClick={addExampleCourse}
           style={{
             padding: '0.75em 1.5em',
-            background: '#3b82f6',
-            color: 'white',
+            background: isAddingCourse ? '#cbd5e1' : '#3b82f6',
+            color: isAddingCourse ? '#64748b' : 'white',
             border: 'none',
             borderRadius: '8px',
-            cursor: 'pointer',
+            cursor: isAddingCourse ? 'not-allowed' : 'pointer',
             fontSize: '1em',
-            fontWeight: 600
+            fontWeight: 600,
+            opacity: isAddingCourse ? 0.7 : 1
           }}
         >
           Add Example Course
         </button>
+        
       </div>
-      <CourseTable courses={courses} />
+      
+
+      {isAddingCourse ? (
+        <AddCourse courses={courses} onCancel={() => setIsAddingCourse(false)} onAdded={handleCourseAdded}/>
+      ) : (
+        <CourseTable courses={courses} />
+      )}
+
+      
+
+      
     </div>
   );
 }
