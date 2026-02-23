@@ -1,0 +1,42 @@
+"COMPSCI 1020": {
+        "credits": 0.5,
+        "prereqs": {
+          "type": "AND",
+          "requirements": [
+            {
+              "type": "OR",
+              "requirements": [
+                {
+                  "type": "AND",
+                  "requirements": [
+                    { 
+                        "type": "COURSE", 
+                        "name": "Ontario Secondary School MHF4U" 
+                    },
+                    { 
+                        "type": "COURSE", 
+                        "name": "Ontario Secondary School MCV4U" 
+                    }
+                  ]
+                },
+                {
+                  "type": "COURSE",
+                  "name": "Mathematics 0110"
+                }
+              ]
+            },
+            {
+              "type": "OR",
+              "requirements": [
+                {
+                  "type": "REGISTRATION",
+                  "program": "Computer Science"
+                },
+                {
+                  "type": "STATUS",
+                  "name": "First-year requirements completed"
+                }
+              ]
+            }
+          ]
+        },

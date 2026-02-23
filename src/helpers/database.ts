@@ -1,82 +1,76 @@
-import { app } from "electron";
-import fs from "fs/promises";
-import path from "path";
-import { CoursesFile, CourseData } from "../types";
+import { app } from 'electron';
+import fs from 'fs/promises';
+import path from 'path';
+import { CoursesDatabase, CourseData } from '../types';
 
-const DB_FILE = "courses.json";
-
-const EMPTY_DB: CoursesFile = {
-  program: "Computer Science",
-  courses: {},
-};
+const DB_FILE = 'courses.json';
 
 export class JSONDatabase {
   private dbPath: string;
 
   constructor() {
-    this.dbPath = path.join(app.getPath("userData"), DB_FILE);
+    // Store in userData directory (persistent across app updates)
+    this.dbPath = path.join(app.getPath('userData'), DB_FILE);
   }
 
   async initialize(): Promise<void> {
     try {
       await fs.access(this.dbPath);
     } catch {
-      await this.write(EMPTY_DB);
+      // File doesn't exist, create it with default data
+      await this.write({});
     }
   }
 
-  private async read(): Promise<CoursesFile> {
+  async read(): Promise<CoursesDatabase> {
     try {
-      const data = await fs.readFile(this.dbPath, "utf-8");
-      return JSON.parse(data) as CoursesFile;
-    } catch {
-      return EMPTY_DB;
+      const data = await fs.readFile(this.dbPath, 'utf-8');
+      return JSON.parse(data);
+    } catch (error) {
+      console.error('Error reading database:', error);
+      return {};
     }
   }
 
-  private async write(data: CoursesFile): Promise<void> {
-    await fs.writeFile(
-      this.dbPath,
-      JSON.stringify(data, null, 2),
-      "utf-8"
-    );
+  async write(data: CoursesDatabase): Promise<void> {
+    try {
+      await fs.writeFile(this.dbPath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+      console.error('Error writing database:', error);
+      throw error;
+    }
   }
 
-  // --------- SAFE PUBLIC API ---------
-
-  async getAllCourses(): Promise<Record<string, CourseData>> {
-    const db = await this.read();
-    return db.courses;
+  async getAllCourses(): Promise<CoursesDatabase> {
+    return await this.read();
   }
 
-  async getCourse(code: string): Promise<CourseData | null> {
+  async getCourse(courseCode: string): Promise<CourseData | null> {
     const db = await this.read();
-    return db.courses[code] ?? null;
+    return db[courseCode] || null;
   }
 
-  async addCourse(code: string, course: CourseData): Promise<void> {
+  async addCourse(courseCode: string, courseData: CourseData): Promise<void> {
     const db = await this.read();
-    db.courses[code] = course;
+    db[courseCode] = courseData;
     await this.write(db);
   }
 
-  async updateCourse(code: string, course: CourseData): Promise<void> {
+  async updateCourse(courseCode: string, courseData: CourseData): Promise<void> {
     const db = await this.read();
-    if (db.courses[code]) {
-      db.courses[code] = course;
+    if (db[courseCode]) {
+      db[courseCode] = courseData;
       await this.write(db);
     }
   }
 
-  async deleteCourse(code: string): Promise<void> {
+  async deleteCourse(courseCode: string): Promise<void> {
     const db = await this.read();
-    delete db.courses[code];
+    delete db[courseCode];
     await this.write(db);
   }
 
-  async importCourses(courses: Record<string, CourseData>): Promise<void> {
-    const db = await this.read();
-    db.courses = courses;
-    await this.write(db);
+  async importCourses(courses: CoursesDatabase): Promise<void> {
+    await this.write(courses);
   }
 }

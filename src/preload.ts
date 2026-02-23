@@ -1,22 +1,16 @@
-import { contextBridge, ipcRenderer } from "electron";
-import { CourseData } from "./types";
+// See the Electron documentation for details on how to use preload scripts:
+// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-contextBridge.exposeInMainWorld("database", {
-  getAllCourses: (): Promise<Record<string, CourseData>> =>
-    ipcRenderer.invoke("db:getAllCourses"),
+import { contextBridge, ipcRenderer } from 'electron';
+import { CoursesDatabase, CourseData } from './types';
 
-  getCourse: (courseCode: string): Promise<CourseData | null> =>
-    ipcRenderer.invoke("db:getCourse", courseCode),
-
-  addCourse: (courseCode: string, courseData: CourseData): Promise<void> =>
-    ipcRenderer.invoke("db:addCourse", courseCode, courseData),
-
-  updateCourse: (courseCode: string, courseData: CourseData): Promise<void> =>
-    ipcRenderer.invoke("db:updateCourse", courseCode, courseData),
-
-  deleteCourse: (courseCode: string): Promise<void> =>
-    ipcRenderer.invoke("db:deleteCourse", courseCode),
-
-  importCourses: (courses: Record<string, CourseData>): Promise<void> =>
-    ipcRenderer.invoke("db:importCourses", courses),
+contextBridge.exposeInMainWorld('database', {
+  getAllCourses: () => ipcRenderer.invoke('db:getAllCourses'),
+  getCourse: (courseCode: string) => ipcRenderer.invoke('db:getCourse', courseCode),
+  addCourse: (courseCode: string, courseData: CourseData) => 
+    ipcRenderer.invoke('db:addCourse', courseCode, courseData),
+  updateCourse: (courseCode: string, courseData: CourseData) => 
+    ipcRenderer.invoke('db:updateCourse', courseCode, courseData),
+  deleteCourse: (courseCode: string) => ipcRenderer.invoke('db:deleteCourse', courseCode),
+  importCourses: (courses: CoursesDatabase) => ipcRenderer.invoke('db:importCourses', courses),
 });
