@@ -34,7 +34,7 @@ export default function ImportExportCourses({ onImport }: { onImport: () => void
   };
 
   return (
-    <div style={{ display: 'flex', gap: '1em', marginBottom: '2em' }}>
+    <div style={{ display: 'flex', gap: '1em' }}>
       <label style={{ display: 'inline-block' }}>
         <input
           type="file"

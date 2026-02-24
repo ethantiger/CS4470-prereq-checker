@@ -5,6 +5,7 @@ import AddCourse from '@/components/AddCourse';
 
 // AUTHOR: Tyler Larson
 import ImportExportCourses from '@/components/ImportExportCourses';
+import { IconPlus } from '@tabler/icons-react';
 
 
 export default function Database() {
@@ -21,14 +22,18 @@ export default function Database() {
     setCourses(data);
   };
 
+  const handleCourseAdded = async () => {
+    await loadCourses();           // refresh state from DB
+    setIsAddingCourse(false);      // go back to table
+  };
+
   return (
     
     <div style={{ padding: '40px' }}>
 
-      <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-
-        <button disabled={isAddingCourse}// ADDED HERE ASWELL!!
-          //onClick={addNewCourse}
+      <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1em' }}>
+        <button
+          disabled={isAddingCourse}
           onClick={() => setIsAddingCourse(true)}
           style={{
             padding: '0.75em 1.5em',
@@ -39,12 +44,19 @@ export default function Database() {
             cursor: isAddingCourse ? 'not-allowed' : 'pointer',
             fontSize: '1em',
             fontWeight: 600,
-            opacity: isAddingCourse ? 0.7 : 1
+            opacity: isAddingCourse ? 0.7 : 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          Add New Course
-        </button>        
+          <IconPlus style={{verticalAlign: 'middle' }} />
+          Add Course
+        </button>
+        <ImportExportCourses onImport={loadCourses} />
       </div>
+
+      
 
       {isAddingCourse ? (
         <AddCourse courses={courses} onCancel={() => setIsAddingCourse(false)} onAdded={handleCourseAdded}/>
