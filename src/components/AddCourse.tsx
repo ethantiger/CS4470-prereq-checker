@@ -70,21 +70,38 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                     paddingTop: depth > 0 ? '0.5em' : '0',
                     paddingBottom: depth > 0 ? '0.5em' : '0'
                 }}>
-                    <div style={{ marginBottom: '0.75em', paddingLeft: '0.5em' }}>
-                        <select
-                            value={item.name || ''}
-                            onChange={(e) => updatePrereqs(draft => {
-                                const target = getNestedItem(draft, path) as CoursePrereq;
-                                target.name = e.target.value;
-                            })}
-                            style={{ padding: '0.4em', width: 'auto', fontSize: '0.9em' }}>
-                            <option value="">Select course...</option>
-                            {Object.keys(courses).sort().map((code) => (
-                                <option key={code} value={code}>
-                                    {code}
-                                </option>
-                            ))}
-                        </select>
+                    <div style={{ marginBottom: '0.75em', paddingLeft: '0.5em', display: 'flex', alignItems: 'center', gap: '0.75em' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Course</label>
+                            <select
+                                value={item.name || ''}
+                                onChange={(e) => updatePrereqs(draft => {
+                                    const target = getNestedItem(draft, path) as CoursePrereq;
+                                    target.name = e.target.value;
+                                })}
+                                style={{ padding: '0.4em', width: 'auto', fontSize: '0.9em' }}>
+                                <option value="">Select course...</option>
+                                {Object.keys(courses).sort().map((code) => (
+                                    <option key={code} value={code}>
+                                        {code}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Min Grade (%)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                value={item.minGrade || 60}
+                                onChange={(e) => updatePrereqs(draft => {
+                                    const target = getNestedItem(draft, path) as CoursePrereq;
+                                    target.minGrade = Number(e.target.value);
+                                })}
+                                style={{ padding: '0.4em', width: '80px', fontSize: '0.9em' }}
+                            />
+                        </div>
                     </div>
                 </div>
             );
@@ -108,27 +125,46 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                 paddingBottom: isNested ? '0.5em' : '0'
             }}>
                 {/* Type Selector */}
-                <div style={{ marginBottom: '0.75em', display: 'flex', alignItems: 'center', gap: '0.5em' }}>
-                    <select
-                        value={group.type}
-                        onChange={(e) => updatePrereqs(draft => {
-                            // Can't change type of PrereqGroup, only show AND/OR
-                            const target = getNestedItem(draft, path) as PrereqGroup;
-                            target.type = e.target.value as JoinType.AND | JoinType.OR;
-                        })}
-                        style={{ 
-                            padding: '0.4em 0.6em', 
-                            width: 'auto', 
-                            fontSize: '0.9em',
-                            fontWeight: 600,
-                            border: '2px solid #3b82f6',
-                            borderRadius: '6px',
-                            background: 'white',
-                            color: '#3b82f6'
-                        }}>
-                        <option value={JoinType.AND}>AND</option>
-                        <option value={JoinType.OR}>OR</option>
-                    </select>
+                <div style={{ marginBottom: '0.75em', display: 'flex', alignItems: 'center', gap: '0.75em' }}>
+                    <div>
+                        <select
+                            value={group.type}
+                            onChange={(e) => updatePrereqs(draft => {
+                                // Can't change type of PrereqGroup, only show AND/OR
+                                const target = getNestedItem(draft, path) as PrereqGroup;
+                                target.type = e.target.value as JoinType.AND | JoinType.OR;
+                            })}
+                            style={{ 
+                                padding: '0.4em 0.6em', 
+                                width: 'auto', 
+                                fontSize: '0.9em',
+                                fontWeight: 600,
+                                border: '2px solid #3b82f6',
+                                borderRadius: '6px',
+                                background: 'white',
+                                color: '#3b82f6'
+                            }}>
+                            <option value={JoinType.AND}>AND</option>
+                            <option value={JoinType.OR}>OR</option>
+                        </select>
+                    </div>
+                    {group.type === JoinType.OR && (
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Credits Required</label>
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                value={group.credits || ''}
+                                placeholder="Optional"
+                                onChange={(e) => updatePrereqs(draft => {
+                                    const target = getNestedItem(draft, path) as PrereqGroup;
+                                    target.credits = e.target.value ? Number(e.target.value) : undefined;
+                                })}
+                                style={{ padding: '0.4em', width: '100px', fontSize: '0.9em' }}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* AND/OR Type - Multiple Requirements */}
@@ -153,7 +189,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                     
                                     {/* Requirement Item */}
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5em' }}>
-                                        {group.requirements.length > 1 && (
+                                        {group.requirements.length > 0 && (
                                             <button 
                                                 type="button" 
                                                 className="remove_course_btn" 
@@ -430,24 +466,47 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
                 {/* If no prereqs exist */}
                 {!prereqs ? (
-                    <div style={{ marginTop: '0.5em' }}>
-                        <select
-                            value=""
-                            onChange={(e) => {
-                                updatePrereqs({
-                                    type: e.target.value as JoinType.AND | JoinType.OR,
-                                    requirements: []
-                                })
-                            }}
-                            style={{ padding: '0.5em', width: 'auto' }}>
-
-                            <option value="">Select type...</option>
-                            <option value={JoinType.AND}>{JoinType.AND}</option>
-                            <option value={JoinType.OR}>{JoinType.OR}</option>
-                        </select>
+                    <div style={{ display: 'flex', gap: '0.5em' }}>
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => updatePrereqs({
+                                    type: JoinType.COURSE,
+                                    name: '',
+                                    minGrade: 0
+                            })}
+                            style={{ fontSize: '0.85em', padding: '0.4em 0.8em' }}>
+                            + Course
+                        </button>
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => updatePrereqs({
+                                type: JoinType.AND,
+                                requirements: []
+                            })}
+                            style={{ fontSize: '0.85em', padding: '0.4em 0.8em' }}>
+                            + Group
+                        </button>
                     </div>
                 ) : (
-                    renderPrereqItem(prereqs, 0)
+                    <>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5em' }}>
+                        <button 
+                            type="button" 
+                            className="remove_course_btn" 
+                            onClick={() => updatePrereqs(null)} 
+                            style={{ 
+                                padding: '0.2em 0.4em', 
+                                fontSize: '0.9em',
+                                marginTop: '0.3em'
+                            }}>
+                            ×
+                        </button>
+                        {renderPrereqItem(prereqs, 0)}
+                    </div>
+                    
+                    </>
                 )}
                     
                 {/* ---- BACK & SAVE BUTTONS ---- */}
