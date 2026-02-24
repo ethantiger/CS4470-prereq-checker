@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useImmer } from 'use-immer';
 import './AddCourse.css';
-import { CoursesDatabase } from '@/types';
+import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup } from '@/types';
 
 // AUTHOR: Tyler Larson
 // This component is for adding a new course to the database. It includes fields for course code, name, department, weight, antirequisites, and prerequisites. The prerequisite section allows for complex logic with multiple groups of courses joined by AND/OR.
@@ -12,25 +12,7 @@ interface AddCourseProps {
     onAdded: () => void;
 }
 
-enum JoinType {
-    AND = 'AND',
-    OR = 'OR',
-    COURSE = 'COURSE'
-}
 
-interface CoursePrereq {
-    type: JoinType.COURSE;
-    name: string;
-    minGrade: number;
-}
-
-interface PrereqGroup {
-    type: JoinType.AND | JoinType.OR;
-    requirements: PrereqItem[];
-    credits?: number;
-}
-
-type PrereqItem = PrereqGroup | CoursePrereq;
 
 export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps) {
     const [courseCode, setCourseCode] = useState('');
@@ -245,7 +227,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                     target.requirements.push({
                                         type: JoinType.COURSE,
                                         name: '',
-                                        minGrade: 0
+                                        minGrade: 60
                                     });
                                 })}
                                 style={{ fontSize: '0.85em', padding: '0.4em 0.8em' }}>
@@ -305,26 +287,32 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
         .filter(code => !antireqs.includes(code)) // hide already added
         .filter(code => code.toLowerCase().includes(antireqInput.toLowerCase()))
         .sort();
-
-
-    const prereqOptions = Object.keys(courses)
-        .filter(code => code !== courseCode) // don't allow self
-        .sort();
-
     
     // For adding the course to the database (called when "Add" button is clicked)
     const handleAdd = async () => {
-        const code = courseCode.trim();
+        const code = courseCode.trim().toUpperCase();
         if (!code) {
             setError('Course Code is required.');
+            return;
+        }
 
-            // refocus on next tick to avoid focus glitches
-            setTimeout(() => courseCodeRef.current?.focus(), 0);
+        if (courses[code]) {
+            setError('Course code already exists in the database.');
+            return;
+        }
+
+        if (weight !== '' && (isNaN(Number(weight)) || Number(weight) < 0)) {
+            setError('Weight must be a non-negative number.');
+            return;
+        }
+
+        if (weight === '') {
+            setError('Weight is required. Please enter a value of 0 or greater.');
             return;
         }
 
         setError(null);
-        await window.database.addCourse(code, { prereqs: [], antireqs });
+        await window.database.addCourse(code, { prereqs, antireqs, credits: weight });
         onAdded(); // or onCancel() if that's your flow
     };
 
@@ -366,9 +354,22 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                         )}
                     </div>
 
+                    {/* Weight */}
+                    <div className="form-field">
+                        <label htmlFor="weight">Weight</label>
+                        <input
+                            id="weight"
+                            type="number"
+                            step="0.5"
+                            placeholder="(e.g., 0.5)"
+                            value={weight}
+                            onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
+                        />
+                    </div>
+
                     {/* Course Name */}
                     <div className="form-field">
-                        <label htmlFor="course-name">Course Name</label>
+                        <label htmlFor="course-name">Course Name (optional)</label>
                         <input
                             id="course-name"
                             type="text"
@@ -380,26 +381,13 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
                     {/* Department */}           {/* add select??? */}
                     <div className="form-field">
-                        <label htmlFor="department">Department</label>
+                        <label htmlFor="department">Department (optional)</label>
                         <input
                             id="department"
                             type="text"
                             placeholder="(e.g., Computer Science)"
                             value={department}
                             onChange={(e) => setDepartment(e.target.value)}
-                        />
-                    </div>
-
-                    {/* Weight */}
-                    <div className="form-field">
-                        <label htmlFor="weight">Weight</label>
-                        <input
-                            id="weight"
-                            type="number"
-                            step="0.5"
-                            placeholder="(e.g., 0.5)"
-                            value={weight}
-                            onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
                         />
                     </div>
                 </div>
