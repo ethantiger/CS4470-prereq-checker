@@ -1,0 +1,249 @@
+.table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 16px;
+  text-align: left;
+  color: #475569;
+  font-weight: 600;
+  background: #f1f5f9;
+}
+
+.table td {
+  padding: 16px;
+}
+
+/* TYLER -- */
+.add-course-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.primary-btn {
+  padding: 0.75em 1.5em;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.primary-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.secondary-btn {
+  padding: 0.25em 0.5em;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 300;
+}
+
+.remove_course_btn {
+  padding: 0.25em 0.5em;
+  color: #e06464;
+  border: none;
+  border-radius: 90px;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+.remove_group_btn {
+  padding: 0.125em 0.25em;
+  color: #e06464;
+  border: none;
+  border-radius: 90px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 300;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.75em;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 0.5em;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5em;
+}
+
+.form-field label {
+  margin-bottom: 0.25em;
+  font-weight: 600;
+  color: #475569;
+}
+
+.form-field input,
+.form-field select {
+  padding: 0.6em 0.75em;
+  width: 200px;
+  font-size: 0.95em;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #1e293b;
+  transition: all 0.15s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-field input::placeholder {
+  color: #94a3b8;
+  font-size: 0.9em;
+}
+
+.form-field input[type="number"] {
+  width: 200px;
+}
+
+/* Dropdown container */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 300px;
+  margin-top: 0.25em;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Dropdown option buttons */
+.autocomplete-option {
+  width: 100%;
+  text-align: left;
+  padding: 0.6em 0.75em;
+  border: none;
+  background: white;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  color: #1e293b;
+  font-size: 0.95em;
+}
+
+/* hover effect */
+.autocomplete-option:hover {
+  background: #eef2ff;
+  color: #3b82f6;
+}
+
+/* Container for antireq chips */
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0.75em 0 1em 0;
+  padding: 0.75em;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 2.5em;
+}
+
+/* Individual chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.4em 0.75em;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e293b;
+  font-size: 0.9em;
+  font-weight: 500;
+  border: 2px solid #dbeafe;
+  transition: all 0.15s ease;
+}
+
+/* Remove button inside chip */
+.chip-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2em;
+  line-height: 1;
+  color: #64748b;
+  padding: 0;
+  transition: color 0.1s ease;
+}
+
+
+
+
+.primary-btn:hover {
+  background: #2563eb;
+}
+
+.primary-btn.secondary {
+  background: #64748b;
+}
+
+.primary-btn.secondary:hover {
+  background: #475569;
+}
+
+.secondary-btn:hover {
+  background: #2563eb;
+}
+
+.chip:hover {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.15);
+}
+
+.chip-remove:hover { 
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.form-section {
+  margin: 1.5em 0;
+}
+
+.section-title {
+  color: #475569;
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
