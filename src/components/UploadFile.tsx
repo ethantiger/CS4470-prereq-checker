@@ -7,20 +7,45 @@ import './UploadFile.css';
 
 export default function UploadFile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { addStudent } = useStudentActions();
+  const { addStudent, clearStudents } = useStudentActions();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    // Clear existing students before uploading new PDF
+    await clearStudents();
+
     for (const file of Array.from(files)) {
       try {
         const studentInfo = await extractInfo(file);
         console.log('Extracted courses:', studentInfo);
-        addStudent(studentInfo);
+        
+        // Handle both single student and array of students (multi-page PDFs)
+        if (Array.isArray(studentInfo)) {
+          for (const student of studentInfo) {
+            addStudent(student);
+          }
+          console.log(`Added ${studentInfo.length} students from PDF pages`);
+        } else {
+          addStudent(studentInfo);
+        }
       } catch (error) {
         console.error('Error parsing PDF:', error);
-        alert('Error parsing PDF file: ' + error);
+        
+        // Provide user-friendly error messages for different scenarios
+        let userMessage = 'Error parsing PDF file: ';
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        
+        if (errorMsg.includes('empty') || errorMsg.includes('corrupted')) {
+          userMessage += 'The PDF appears to be empty or corrupted. Please try uploading the file again.';
+        } else if (errorMsg.includes('No student data found')) {
+          userMessage += 'No student information could be found in this file. The system can work with both regular and redacted transcripts.';
+        } else {
+          userMessage += errorMsg;
+        }
+        
+        alert(userMessage);
       }
     }
     
