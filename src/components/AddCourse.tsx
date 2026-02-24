@@ -72,14 +72,22 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                 }}>
                     <div style={{ marginBottom: '0.75em', paddingLeft: '0.5em', display: 'flex', alignItems: 'center', gap: '0.75em' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Course</label>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Course</label>
                             <select
                                 value={item.name || ''}
                                 onChange={(e) => updatePrereqs(draft => {
                                     const target = getNestedItem(draft, path) as CoursePrereq;
                                     target.name = e.target.value;
                                 })}
-                                style={{ padding: '0.4em', width: 'auto', fontSize: '0.9em' }}>
+                                style={{ 
+                                    padding: '0.5em 0.6em', 
+                                    width: 'auto', 
+                                    fontSize: '0.9em',
+                                    border: '2px solid #e2e8f0',
+                                    borderRadius: '6px',
+                                    background: 'white',
+                                    transition: 'all 0.15s ease'
+                                }}>
                                 <option value="">Select course...</option>
                                 {Object.keys(courses).sort().map((code) => (
                                     <option key={code} value={code}>
@@ -89,7 +97,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                             </select>
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Min Grade (%)</label>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Min Grade (%)</label>
                             <input
                                 type="number"
                                 min="0"
@@ -99,7 +107,14 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                     const target = getNestedItem(draft, path) as CoursePrereq;
                                     target.minGrade = Number(e.target.value);
                                 })}
-                                style={{ padding: '0.4em', width: '80px', fontSize: '0.9em' }}
+                                style={{ 
+                                    padding: '0.5em 0.6em', 
+                                    width: '80px', 
+                                    fontSize: '0.9em',
+                                    border: '2px solid #e2e8f0',
+                                    borderRadius: '6px',
+                                    transition: 'all 0.15s ease'
+                                }}
                             />
                         </div>
                     </div>
@@ -150,7 +165,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                     </div>
                     {group.type === JoinType.OR && (
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b' }}>Credits Required</label>
+                            <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Credits Required</label>
                             <input
                                 type="number"
                                 min="0"
@@ -161,7 +176,14 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                     const target = getNestedItem(draft, path) as PrereqGroup;
                                     target.credits = e.target.value ? Number(e.target.value) : undefined;
                                 })}
-                                style={{ padding: '0.4em', width: '100px', fontSize: '0.9em' }}
+                                style={{ 
+                                    padding: '0.5em 0.6em', 
+                                    width: '100px', 
+                                    fontSize: '0.9em',
+                                    border: '2px solid #e2e8f0',
+                                    borderRadius: '6px',
+                                    transition: 'all 0.15s ease'
+                                }}
                             />
                         </div>
                     )}
@@ -309,13 +331,15 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
     return (
         <div className="table-card">
             <div style={{ padding: '16px' }}>
-                <h1 style={{ margin: 0, color: '#475569' }}>
+                <h1 style={{ margin: 0, color: '#1e293b', fontSize: '1.75em', fontWeight: 700 }}>
                 Add Course
                 </h1>
 
-                <br></br>
-                <hr></hr>
-                <br></br>
+                <hr style={{ 
+                    margin: '1.25em 0', 
+                    border: 'none', 
+                    borderTop: '2px solid #e2e8f0' 
+                }} />
 
 
 
@@ -384,8 +408,12 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
                 {/* ---- ANTIREQS ---- */}
 
-                <br></br>
-                <h2 style={{ color: '#475569' }}>Antirequisites</h2>
+                <hr style={{ 
+                    margin: '1.5em 0', 
+                    border: 'none', 
+                    borderTop: '2px solid #e2e8f0' 
+                }} />
+                <h2 style={{ color: '#475569', fontSize: '1.25em', fontWeight: 600, marginBottom: '0.5em' }}>Antirequisites</h2>
 
 
                 {/* Chips list (only show when there are antireqs) */}
@@ -409,7 +437,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
                 {/* Input add button side-by-side */}    
                 <div className="form-field" style={{ position: 'relative' }}>     {/* <input id="antireqs" type="text" placeholder="(e.g., COMPSCI 1026)" value={antireqInput} onChange={(e) => setAntireqInput(e.target.value)}/> */}
-                    <label htmlFor="antireq-search">Add Anti-req</label>      {/* old =  <label htmlFor="antireqs" style={{ display: 'block' }}>Add Anti-req</label>*/}
+                    <label htmlFor="antireq-search" style={{ display: 'block', marginBottom: '0.5em' }}>Add Anti-req</label>      {/* old =  <label htmlFor="antireqs" style={{ display: 'block' }}>Add Anti-req</label>*/}
 
 
                     <div style={{ display: 'flex', gap: '0.75em', alignItems: 'center' }}>
@@ -420,7 +448,14 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                             placeholder="Type to search (e.g., COMPSCI 1026)"
                             value={antireqInput}
                             onChange={(e) => setAntireqInput(e.target.value)}
-                            style={{ padding: '0.5em', width: '200px' }}
+                            style={{ 
+                                padding: '0.6em 0.75em', 
+                                width: '300px',
+                                fontSize: '0.95em',
+                                border: '2px solid #e2e8f0',
+                                borderRadius: '8px',
+                                transition: 'all 0.15s ease'
+                            }}
                         />
 
                         <button
@@ -459,10 +494,14 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                                     {/* NEED TO ADD FIELD FOR MIN GRADE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
                                     {/* also need to add funcitonality for things like "1.0 credits from theres courses..."!!!!!!!! */}
 
-                <br></br>
-                <h2 style={{ color: '#475569' }}>Prerequisites</h2>
+                <hr style={{ 
+                    margin: '1.5em 0', 
+                    border: 'none', 
+                    borderTop: '2px solid #e2e8f0' 
+                }} />
+                <h2 style={{ color: '#475569', fontSize: '1.25em', fontWeight: 600, marginBottom: '0.5em' }}>Prerequisites</h2>
 
-                <label>Select Prerequisites</label>
+                <label style={{ display: 'block', marginBottom: '0.75em', fontSize: '0.95em', color: '#64748b' }}>Select Prerequisites</label>
 
                 {/* If no prereqs exist */}
                 {!prereqs ? (
@@ -511,11 +550,16 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                     
                 {/* ---- BACK & SAVE BUTTONS ---- */}
 
-                <div style={{ marginTop: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <hr style={{ 
+                    margin: '1.5em 0', 
+                    border: 'none', 
+                    borderTop: '2px solid #e2e8f0' 
+                }} />
+
+                <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1em', alignItems: 'center' }}>
 
                     <button className="primary-btn" onClick={handleAdd}>Add</button>
-                    <span style={{ padding: '0 0.25em' }}>|</span>
-                    <button onClick={onCancel} className="primary-btn">Cancel</button>
+                    <button onClick={onCancel} className="primary-btn" style={{ background: '#64748b' }}>Cancel</button>
 
                 </div>
             </div>

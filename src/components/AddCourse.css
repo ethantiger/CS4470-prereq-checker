@@ -84,15 +84,16 @@
 
 .form-row {
   display: flex;
-  gap: 1.5em;
+  gap: 1.75em;
   flex-wrap: wrap;
   align-items: flex-start;
+  margin-bottom: 0.5em;
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  
+  margin-bottom: 0.5em;
 }
 
 .form-field label {
@@ -101,9 +102,28 @@
   color: #475569;
 }
 
-.form-field input {
-  padding: 0.5em;
+.form-field input,
+.form-field select {
+  padding: 0.6em 0.75em;
   width: 200px;
+  font-size: 0.95em;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #1e293b;
+  transition: all 0.15s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-field input::placeholder {
+  color: #94a3b8;
+  font-size: 0.9em;
 }
 
 .form-field input[type="number"] {
@@ -115,30 +135,35 @@
   position: absolute;
   top: 100%;
   left: 0;
-  width: 200px;
+  width: 300px;
   margin-top: 0.25em;
   background: white;
-  border: 1px solid #cbd5e1;
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
   overflow: hidden;
   z-index: 10;
   max-height: 180px;
   overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Dropdown option buttons */
 .autocomplete-option {
   width: 100%;
   text-align: left;
-  padding: 0.5em 0.75em;
+  padding: 0.6em 0.75em;
   border: none;
   background: white;
   cursor: pointer;
+  transition: background 0.1s ease;
+  color: #1e293b;
+  font-size: 0.95em;
 }
 
 /* hover effect */
 .autocomplete-option:hover {
-  background: #f1f5f9;
+  background: #eef2ff;
+  color: #3b82f6;
 }
 
 /* Container for antireq chips */
@@ -146,7 +171,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
-  margin: 0.5em 0 0.75em 0;
+  margin: 0.75em 0 1em 0;
+  padding: 0.75em;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 2.5em;
 }
 
 /* Individual chip */
@@ -154,11 +184,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  padding: 0.35em 0.6em;
+  padding: 0.4em 0.75em;
   border-radius: 999px;
   background: #eef2ff;
   color: #1e293b;
   font-size: 0.9em;
+  font-weight: 500;
+  border: 2px solid #dbeafe;
+  transition: all 0.15s ease;
 }
 
 /* Remove button inside chip */
@@ -166,9 +199,11 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 1.1em;
+  font-size: 1.2em;
   line-height: 1;
-  color: #475569;
+  color: #64748b;
+  padding: 0;
+  transition: color 0.1s ease;
 }
 
 
@@ -178,16 +213,37 @@
   background: #2563eb;
 }
 
+.primary-btn.secondary {
+  background: #64748b;
+}
+
+.primary-btn.secondary:hover {
+  background: #475569;
+}
+
 .secondary-btn:hover {
   background: #2563eb;
 }
 
 .chip:hover {
   background: #dbeafe;
+  border-color: #bfdbfe;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.15);
 }
 
 .chip-remove:hover { 
-  color: #1e293b;
+  color: #dc2626;
+  font-weight: 600;
 }
 
+.form-section {
+  margin: 1.5em 0;
+}
 
+.section-title {
+  color: #475569;
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
