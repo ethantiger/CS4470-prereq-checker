@@ -353,6 +353,14 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
         .filter(code => !antireqs.includes(code)) // hide already added
         .filter(code => code.toLowerCase().includes(antireqInput.toLowerCase()))
         .sort();
+
+    const allCoursesHaveName = (item: PrereqItem): boolean => {
+        if (item.type === JoinType.COURSE) {
+            return !!item.name;
+        } else {
+            return item.requirements.every(allCoursesHaveName);
+        }
+    };
     
     // For adding the course to the database (called when "Add" button is clicked)
     const handleAdd = async () => {
@@ -374,6 +382,11 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
 
         if (weight === '') {
             setError('Weight is required. Please enter a value of 0 or greater.');
+            return;
+        }
+
+        if (prereqs && !allCoursesHaveName(prereqs)) {
+            setError('All prerequisite courses must have a valid course code.');
             return;
         }
 
@@ -422,12 +435,6 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                             disabled={editMode}
                             style={editMode ? { background: '#f1f5f9', cursor: 'not-allowed' } : {}}
                         />
-
-                        {error && (
-                            <div style={{ marginTop: '0.5em', color: '#b91c1c', fontWeight: 600 }}>
-                                {error}
-                            </div>
-                        )}
                     </div>
 
                     {/* Weight */}
@@ -576,7 +583,7 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                             onClick={() => updatePrereqs({
                                     type: JoinType.COURSE,
                                     name: '',
-                                    minGrade: 0
+                                    minGrade: 60
                             })}
                             style={{ fontSize: '0.85em', padding: '0.4em 0.8em' }}>
                             + Course
@@ -620,6 +627,24 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                     borderTop: '2px solid #e2e8f0' 
                 }} />
 
+                {error && (
+                    <div style={{ 
+                        padding: '1em 1.25em',
+                        marginBottom: '1.5em',
+                        background: '#fef2f2',
+                        border: '2px solid #fecaca',
+                        borderRadius: '8px',
+                        color: '#991b1b',
+                        fontSize: '0.95em',
+                        fontWeight: 500,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75em'
+                    }}>
+                        <span style={{ fontSize: '1.2em' }}>⚠️</span>
+                        <span>{error}</span>
+                    </div>
+                )}
                 <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1em', alignItems: 'center' }}>
 
                     <button className="primary-btn" onClick={handleAdd}>{editMode ? 'Save Changes' : 'Add'}</button>
