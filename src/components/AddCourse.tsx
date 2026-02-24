@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useImmer } from 'use-immer';
 import './AddCourse.css';
-import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup } from '@/types';
+import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup, CourseData } from '@/types';
 
 // AUTHOR: Tyler Larson
 // This component is for adding a new course to the database. It includes fields for course code, name, department, weight, antirequisites, and prerequisites. The prerequisite section allows for complex logic with multiple groups of courses joined by AND/OR.
@@ -10,20 +10,23 @@ interface AddCourseProps {
     courses: CoursesDatabase;
     onCancel: () => void;
     onAdded: () => void;
+    editMode?: boolean;
+    courseCode?: string;
+    courseData?: CourseData;
 }
 
 
 
-export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps) {
-    const [courseCode, setCourseCode] = useState('');
-    const [weight, setWeight] = useState<number | ''>('');
+export default function AddCourse({ courses, onCancel, onAdded, editMode = false, courseCode: initialCourseCode = '', courseData: initialCourseData }: AddCourseProps) {
+    const [courseCode, setCourseCode] = useState(initialCourseCode);
+    const [weight, setWeight] = useState<number | ''>(initialCourseData?.credits || '');
     const [courseName, setCourseName] = useState('');
     const [department, setDepartment] = useState('');
     const [antireqInput, setAntireqInput] = useState('');
-    const [antireqs, setAntireqs] = useState<string[]>([]);
+    const [antireqs, setAntireqs] = useState<string[]>(initialCourseData?.antireqs || []);
     const [error, setError] = useState<string | null>(null);
     const courseCodeRef = useRef<HTMLInputElement>(null);
-    const [prereqs, updatePrereqs] = useImmer<PrereqItem>(null);
+    const [prereqs, updatePrereqs] = useImmer<PrereqItem>(initialCourseData?.prereqs || null);
     const [courseInputs, setCourseInputs] = useState<{ [key: string]: string }>({});
     const [activeCourseInput, setActiveCourseInput] = useState<string | null>(null);
 
@@ -359,7 +362,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
             return;
         }
 
-        if (courses[code]) {
+        if (!editMode && courses[code]) {
             setError('Course code already exists in the database.');
             return;
         }
@@ -375,15 +378,23 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
         }
 
         setError(null);
-        await window.database.addCourse(code, { prereqs, antireqs, credits: weight });
-        onAdded(); // or onCancel() if that's your flow
+        
+        if (editMode) {
+            // Update existing course
+            await window.database.updateCourse(initialCourseCode, { prereqs, antireqs, credits: weight });
+        } else {
+            // Add new course
+            await window.database.addCourse(code, { prereqs, antireqs, credits: weight });
+        }
+        
+        onAdded();
     };
 
     return (
         <div className="table-card">
             <div style={{ padding: '16px' }}>
                 <h1 style={{ margin: 0, color: '#1e293b', fontSize: '1.75em', fontWeight: 700 }}>
-                Add Course
+                {editMode ? 'Edit Course' : 'Add Course'}
                 </h1>
 
                 <hr style={{ 
@@ -408,6 +419,8 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                             placeholder="(e.g., COMPSCI 1027)"
                             value={courseCode}
                             onChange={(e) => setCourseCode(e.target.value)}
+                            disabled={editMode}
+                            style={editMode ? { background: '#f1f5f9', cursor: 'not-allowed' } : {}}
                         />
 
                         {error && (
@@ -609,7 +622,7 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
                 <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '1em', alignItems: 'center' }}>
 
-                    <button className="primary-btn" onClick={handleAdd}>Add</button>
+                    <button className="primary-btn" onClick={handleAdd}>{editMode ? 'Save Changes' : 'Add'}</button>
                     <button onClick={onCancel} className="primary-btn" style={{ background: '#64748b' }}>Cancel</button>
 
                 </div>

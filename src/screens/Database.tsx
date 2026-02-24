@@ -11,6 +11,7 @@ import { IconPlus } from '@tabler/icons-react';
 export default function Database() {
   const [courses, setCourses] = useState<CoursesDatabase>({});
   const [isAddingCourse, setIsAddingCourse] = useState(false);
+  const [editingCourseCode, setEditingCourseCode] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -25,7 +26,19 @@ export default function Database() {
   const handleCourseAdded = async () => {
     await loadCourses();           // refresh state from DB
     setIsAddingCourse(false);      // go back to table
+    setEditingCourseCode(null);    // clear edit mode
   };
+
+  const handleEdit = (courseCode: string) => {
+    setEditingCourseCode(courseCode);
+    setIsAddingCourse(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCourseCode(null);
+  };
+
+  const disableButton = isAddingCourse || editingCourseCode !== null;
 
   return (
     
@@ -33,18 +46,18 @@ export default function Database() {
 
       <div style={{ marginBottom: '2em', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1em' }}>
         <button
-          disabled={isAddingCourse}
+          disabled={disableButton}
           onClick={() => setIsAddingCourse(true)}
           style={{
             padding: '0.75em 1.5em',
-            background: isAddingCourse ? '#cbd5e1' : '#3b82f6',
-            color: isAddingCourse ? '#64748b' : 'white',
+            background: disableButton ? '#cbd5e1' : '#3b82f6',
+            color: disableButton ? '#64748b' : 'white',
             border: 'none',
             borderRadius: '8px',
-            cursor: isAddingCourse ? 'not-allowed' : 'pointer',
+            cursor: disableButton ? 'not-allowed' : 'pointer',
             fontSize: '1em',
             fontWeight: 600,
-            opacity: isAddingCourse ? 0.7 : 1,
+            opacity: disableButton ? 0.7 : 1,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -60,8 +73,17 @@ export default function Database() {
 
       {isAddingCourse ? (
         <AddCourse courses={courses} onCancel={() => setIsAddingCourse(false)} onAdded={handleCourseAdded}/>
+      ) : editingCourseCode ? (
+        <AddCourse 
+          courses={courses} 
+          onCancel={handleCancelEdit} 
+          onAdded={handleCourseAdded}
+          editMode={true}
+          courseCode={editingCourseCode}
+          courseData={courses[editingCourseCode]}
+        />
       ) : (
-        <CourseTable courses={courses} />
+        <CourseTable courses={courses} onEdit={handleEdit} />
       )}
 
     </div>

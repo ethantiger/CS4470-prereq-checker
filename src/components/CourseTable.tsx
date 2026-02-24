@@ -5,9 +5,10 @@ import './CourseTable.css';
 
 interface CourseTableProps {
   courses: CoursesDatabase;
+  onEdit: (courseCode: string) => void;
 }
 
-export default function CourseTable({ courses }: CourseTableProps) {
+export default function CourseTable({ courses, onEdit }: CourseTableProps) {
   const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
   const [deleteModal, setDeleteModal] = useState<{ show: boolean; courseCode: string | null }>({ show: false, courseCode: null });
 
@@ -193,7 +194,7 @@ export default function CourseTable({ courses }: CourseTableProps) {
                   <div style={{ display: 'flex', gap: '0.5em' }}>
                     <button
                       className="action-button edit-button"
-                      onClick={() => console.log('Edit', courseCode)}
+                      onClick={() => onEdit(courseCode)}
                       aria-label={`Edit ${courseCode}`}
                     >
                       <IconEdit size={18} />
