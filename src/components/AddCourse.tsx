@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
+import { useImmer } from 'use-immer';
 import './AddCourse.css';
-import { CoursesDatabase } from 'CS4470-prereq-checker/src/types';
+import { CoursesDatabase } from '@/types';
 
 // AUTHOR: Tyler Larson
 // This component is for adding a new course to the database. It includes fields for course code, name, department, weight, antirequisites, and prerequisites. The prerequisite section allows for complex logic with multiple groups of courses joined by AND/OR.
@@ -11,11 +12,17 @@ interface AddCourseProps {
     onAdded: () => void;
 }
 
-type JoinType = 'AND' | 'OR';
+enum JoinType {
+    AND = 'AND',
+    OR = 'OR',
+    COURSE = 'COURSE'
+}
 
 interface PrereqGroup {
-  courses: string[];        // course codes in this group (each is a select)
-  join: JoinType | null;    // AND/OR applies to all courses in the group
+  type: JoinType;           // COURSE, AND, or OR
+  course?: string;          // single course (for COURSE type)
+  courses: string[];        // course codes in this group (for AND/OR)
+  subGroups: PrereqGroup[]; // nested groups for AND/OR
 }
 
 interface PrereqGroupsState {
@@ -36,15 +43,116 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
     const [department, setDepartment] = useState('');
     const [antireqInput, setAntireqInput] = useState('');
     const [antireqs, setAntireqs] = useState<string[]>([]);
-    //const [selectedPrereq, setSelectedPrereq] = useState('');
     const [error, setError] = useState<string | null>(null);
     const courseCodeRef = useRef<HTMLInputElement>(null);
-    //const [prereqItems, setPrereqItems] = useState<PrereqItem[]>([{ course: '' }]);
-    //const getDisplayText = (value: string) => (value === '' ? 'Select…' : value);
-    const [prereqState, setPrereqState] = useState<PrereqGroupsState>({
+    const [prereqState, setPrereqState] = useImmer<PrereqGroupsState>({
         groups: [],
         join: null
     });
+
+    // Render sub-group recursively
+    const renderSubGroup = (group: PrereqGroup, groupIndex: number, subGroupIndex: number, depth: number = 1) => {
+        const padding = `${depth * 0.75}em`;
+        
+        return (
+            <div key={subGroupIndex} style={{ marginLeft: padding, marginTop: '0.5em', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '8px' }}>
+                {/* Sub-group Type Selector */}
+                <div style={{ marginBottom: '0.75em' }}>
+                    <select
+                        value={group.subGroups[subGroupIndex].type}
+                        onChange={(e) => setSubGroupType(groupIndex, subGroupIndex, e.target.value as JoinType)}
+                        style={{ padding: '0.4em', width: 'auto', fontSize: '0.9em' }}>
+                        <option value={JoinType.COURSE}>{JoinType.COURSE}</option>
+                        <option value={JoinType.AND}>{JoinType.AND}</option>
+                        <option value={JoinType.OR}>{JoinType.OR}</option>
+                    </select>
+                </div>
+
+                {/* COURSE Type */}
+                {group.subGroups[subGroupIndex].type === JoinType.COURSE && (
+                    <div style={{ marginBottom: '0.75em' }}>
+                        <select
+                            value={group.subGroups[subGroupIndex].course || ''}
+                            onChange={(e) => updateSubGroupCourse(groupIndex, subGroupIndex, e.target.value)}
+                            style={{ padding: '0.4em', width: 'auto', fontSize: '0.9em' }}>
+                            <option value="">Select course...</option>
+                            {prereqOptions.map((code) => (
+                                <option key={code} value={code}>
+                                    {code}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                {/* AND/OR Type */}
+                {(group.subGroups[subGroupIndex].type === JoinType.AND || group.subGroups[subGroupIndex].type === JoinType.OR) && (
+                    <div style={{ marginBottom: '0.75em' }}>
+                        {/* Courses */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5em', alignItems: 'center', marginBottom: '0.5em' }}>
+                            <span style={{ fontSize: '1em' }}>(</span>
+                            {group.subGroups[subGroupIndex].courses.map((c, ci) => (
+                                <div key={ci} style={{ display: 'flex', gap: '0.25em', alignItems: 'center' }}>
+                                    {group.subGroups[subGroupIndex].courses.length > 1 && (
+                                        <button type="button" className="remove_course_btn" onClick={() => removeSubGroupCourse(groupIndex, subGroupIndex, ci)} style={{ padding: '0 4px', fontSize: '0.9em' }}>×</button>
+                                    )}
+                                    <select
+                                        value={c}
+                                        onChange={(e) => updateSubGroupCourseInList(groupIndex, subGroupIndex, ci, e.target.value)}
+                                        style={{ padding: '0.3em', width: 'auto', fontSize: '0.85em' }}>
+                                        <option value="">Select...</option>
+                                        {prereqOptions.map((code) => (
+                                            <option key={code} value={code}>
+                                                {code}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {ci < group.subGroups[subGroupIndex].courses.length - 1 && <span style={{ fontWeight: 700, fontSize: '0.9em' }}>{group.subGroups[subGroupIndex].type}</span>}
+                                </div>
+                            ))}
+                            <span style={{ fontSize: '1em' }}>)</span>
+                        </div>
+
+                        {/* Add course button */}
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => addCourseToSubGroup(groupIndex, subGroupIndex)}
+                            style={{ fontSize: '0.85em', padding: '0.3em 0.6em', marginRight: '0.5em' }}>
+                            + Course
+                        </button>
+
+                        {/* Add nested group button */}
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => addNestedSubGroup(groupIndex, subGroupIndex)}
+                            style={{ fontSize: '0.85em', padding: '0.3em 0.6em' }}>
+                            + Group
+                        </button>
+
+                        {/* Nested sub-groups */}
+                        {group.subGroups[subGroupIndex].subGroups.length > 0 && (
+                            <div style={{ marginTop: '0.5em' }}>
+                                {group.subGroups[subGroupIndex].subGroups.map((nestedGroup, nestedIndex) =>
+                                    renderSubGroup(group.subGroups[subGroupIndex], groupIndex, nestedIndex, depth + 1)
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Remove button */}
+                <button
+                    type="button"
+                    className="remove_group_btn"
+                    onClick={() => removeNestedSubGroup(groupIndex, subGroupIndex, subGroupIndex)}
+                    style={{ fontSize: '0.85em', padding: '0.3em 0.6em', marginTop: '0.5em' }}>
+                    Remove
+                </button>
+            </div>
+        );
+    };
 
 
             
@@ -111,108 +219,145 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
 
 
     const setFirstPrereqCourse = (course: string) => {
-        setPrereqState(prev => {
-            if (prev.groups.length === 0) {
-                return { ...prev, groups: [{ courses: course ? [course] : [''], join: null }] };
+        setPrereqState(draft => {
+            if (draft.groups.length === 0) {
+                draft.groups.push({ type: JoinType.COURSE, course, courses: [], subGroups: [] });
+            } else {
+                draft.groups[0].course = course;
             }
-
-            const groups = [...prev.groups];
-            const g0 = { ...groups[0] };
-            const nextCourses = [...g0.courses];
-
-            if (nextCourses.length === 0) nextCourses.push(course);
-            else nextCourses[0] = course;
-
-            g0.courses = nextCourses;
-            groups[0] = g0;
-
-            return { ...prev, groups };
         });
     };
 
-    const updateGroupCourse = (groupIndex: number, courseIndex: number, value: string) => {
-        setPrereqState(prev => {
-            const groups = [...prev.groups];
-            const g = { ...groups[groupIndex] };
-            const nextCourses = [...g.courses];
+    const setGroupType = (groupIndex: number, type: JoinType) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].type = type;
+            if (type === JoinType.COURSE) {
+                draft.groups[groupIndex].courses = [];
+                draft.groups[groupIndex].subGroups = [];
+            } else {
+                draft.groups[groupIndex].course = undefined;
+            }
+        });
+    };
 
-            nextCourses[courseIndex] = value;
-            g.courses = nextCourses;
+    const updateGroupCourse = (groupIndex: number, value: string) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].course = value;
+        });
+    };
 
-            const realCount = nextCourses.filter(c => c.trim() !== '').length;
-            if (realCount <= 1) g.join = null;
-
-            groups[groupIndex] = g;
-            return { ...prev, groups };
+    const updateGroupCourseInList = (groupIndex: number, courseIndex: number, value: string) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].courses[courseIndex] = value;
         });
     };
 
     const setGroupJoin = (groupIndex: number, join: JoinType) => {
-        setPrereqState(prev => {
-            const groups = [...prev.groups];
-            const g = { ...groups[groupIndex] };
-
-            g.join = join;
-
-            groups[groupIndex] = g;
-            return { ...prev, groups };
+        setPrereqState(draft => {
+            draft.groups[groupIndex].courses = draft.groups[groupIndex].courses.filter(c => c.trim() !== '');
+            if (draft.groups[groupIndex].courses.length <= 1) {
+                draft.groups[groupIndex].courses = [''];
+            }
         });
     };
 
     const addCourseToGroup = (groupIndex: number) => {
-        setPrereqState(prev => {
-            const groups = [...prev.groups];
-            const g = { ...groups[groupIndex] };
-
-            g.courses = [...g.courses, '']; // add a new empty select
-
-            groups[groupIndex] = g;
-            return { ...prev, groups };
+        setPrereqState(draft => {
+            draft.groups[groupIndex].courses.push('');
         });
     };
 
-
     const removeGroupCourse = (groupIndex: number, courseIndex: number) => {
-        setPrereqState(prev => {
-            const groups = [...prev.groups];
-            const g = { ...groups[groupIndex] };
+        setPrereqState(draft => {
+            draft.groups[groupIndex].courses.splice(courseIndex, 1);
+            if (draft.groups[groupIndex].courses.length === 0) {
+                draft.groups[groupIndex].courses.push('');
+            }
+        });
+    };
 
-            const nextCourses = [...g.courses];
-            nextCourses.splice(courseIndex, 1);
+    const addSubGroup = (groupIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups.push({ type: JoinType.COURSE, course: '', courses: [], subGroups: [] });
+        });
+    };
 
-            const normalizedCourses = nextCourses.length === 0 ? [''] : nextCourses;
+    const removeSubGroup = (groupIndex: number, subGroupIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups.splice(subGroupIndex, 1);
+        });
+    };
 
-            const realCount = normalizedCourses.filter(c => c.trim() !== '').length;
-            const nextJoin = realCount <= 1 ? null : g.join;
+    const setSubGroupType = (groupIndex: number, subGroupIndex: number, type: JoinType) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].type = type;
+            if (type === JoinType.COURSE) {
+                draft.groups[groupIndex].subGroups[subGroupIndex].courses = [];
+                draft.groups[groupIndex].subGroups[subGroupIndex].subGroups = [];
+            } else {
+                draft.groups[groupIndex].subGroups[subGroupIndex].course = undefined;
+            }
+        });
+    };
 
-            g.courses = normalizedCourses;
-            g.join = nextJoin;
+    const updateSubGroupCourse = (groupIndex: number, subGroupIndex: number, value: string) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].course = value;
+        });
+    };
 
-            groups[groupIndex] = g;
-            return { ...prev, groups };
+    const updateSubGroupCourseInList = (groupIndex: number, subGroupIndex: number, courseIndex: number, value: string) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].courses[courseIndex] = value;
+        });
+    };
+
+    const addCourseToSubGroup = (groupIndex: number, subGroupIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].courses.push('');
+        });
+    };
+
+    const removeSubGroupCourse = (groupIndex: number, subGroupIndex: number, courseIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].courses.splice(courseIndex, 1);
+            if (draft.groups[groupIndex].subGroups[subGroupIndex].courses.length === 0) {
+                draft.groups[groupIndex].subGroups[subGroupIndex].courses.push('');
+            }
+        });
+    };
+
+    const addNestedSubGroup = (groupIndex: number, subGroupIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].subGroups.push({ type: JoinType.COURSE, course: '', courses: [], subGroups: [] });
+        });
+    };
+
+    const removeNestedSubGroup = (groupIndex: number, subGroupIndex: number, nestedIndex: number) => {
+        setPrereqState(draft => {
+            draft.groups[groupIndex].subGroups[subGroupIndex].subGroups.splice(nestedIndex, 1);
         });
     };
 
     const addNewGroup = () => {
-        setPrereqState(prev => ({
-            ...prev,
-            groups: [...prev.groups, { courses: [''], join: null }]
-        }));
+        setPrereqState(draft => {
+            draft.groups.push({ type: JoinType.COURSE, course: '', courses: [], subGroups: [] });
+        });
     };
 
     const removeGroup = (groupIndex: number) => {
-        setPrereqState(prev => {
-            const groups = [...prev.groups];
-            groups.splice(groupIndex, 1);
-
-            const nextJoin = groups.length <= 1 ? null : prev.join;
-
-            return { ...prev, groups, join: nextJoin };
+        setPrereqState(draft => {
+            draft.groups.splice(groupIndex, 1);
+            if (draft.groups.length <= 1) {
+                draft.join = null;
+            }
         });
     };
 
     const setGroupsJoin = (join: JoinType) => {
-        setPrereqState(prev => ({ ...prev, join }));
+        setPrereqState(draft => {
+            draft.join = join;
+        });
     };
 
 
@@ -426,103 +571,134 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                     <div style={{ marginTop: '0.5em' }}>
                         <select
                             value=""
-                            onChange={(e) => setFirstPrereqCourse(e.target.value)}
+                            onChange={(e) => {
+                                const type = e.target.value as JoinType;
+                                if (type) setFirstPrereqCourse(type);
+                            }}
                             style={{ padding: '0.5em', width: 'auto' }}>
 
-                            <option value="">Select...</option>
-                            
-                            {prereqOptions.map((code) => (
-                                <option key={code} value={code}>
-                                    {code}
-                                </option>
-                            ))}
+                            <option value="">Select type...</option>
+                            <option value={JoinType.COURSE}>{JoinType.COURSE}</option>
+                            <option value={JoinType.AND}>{JoinType.AND}</option>
+                            <option value={JoinType.OR}>{JoinType.OR}</option>
                         </select>
-
                     </div>
                 ) : (
                     <div style={{ marginTop: '0.5em', marginBottom: '0.5em', display: 'flex', flexDirection: 'column', gap: '1em' }}>
 
                         {/* Render each group */}
                         {prereqState.groups.map((group, gi) => (
-                            <div>
+                            <div key={gi}>
                                 {gi > 0 && gi < prereqState.groups.length && prereqState.join && <span style={{ fontWeight: 500 }}>{prereqState.join}</span>}
 
                                 <div
-                                    key={gi}
                                     style={{ border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px' }}>
-                                        
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75em', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '1.25em' }}>(</span>
+                                    
+                                    {/* Group Type Selector */}
+                                    <div style={{ marginBottom: '1em' }}>
+                                        <label style={{ display: 'block', marginBottom: '0.5em', fontWeight: 500 }}>Group Type:</label>
+                                        <select
+                                            value={group.type}
+                                            onChange={(e) => setGroupType(gi, e.target.value as JoinType)}
+                                            style={{ padding: '0.5em', width: 'auto' }}>
+                                            <option value={JoinType.COURSE}>{JoinType.COURSE}</option>
+                                            <option value={JoinType.AND}>{JoinType.AND}</option>
+                                            <option value={JoinType.OR}>{JoinType.OR}</option>
+                                        </select>
+                                    </div>
 
-                                        {group.courses.map((c, ci) => (
-                                            <div key={ci} style={{ display: 'flex', gap: '0.35em', alignItems: 'center' }}>
+                                    {/* COURSE Type - Single Course Select */}
+                                    {group.type === JoinType.COURSE && (
+                                        <div style={{ marginBottom: '1em' }}>
+                                            <select
+                                                value={group.course || ''}
+                                                onChange={(e) => updateGroupCourse(gi, e.target.value)}
+                                                style={{ padding: '0.5em', width: 'auto' }}>
+                                                <option value="">Select course...</option>
+                                                {prereqOptions.map((code) => (
+                                                    <option key={code} value={code}>
+                                                        {code}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
 
-                                                {group.courses.length > 1 && (
-                                                    <button type="button" className="remove_course_btn" onClick={() => removeGroupCourse(gi, ci)}>×</button>
-                                                )}
-                                                
-                                                <select
-                                                    value={c}
-                                                    onChange={(e) => updateGroupCourse(gi, ci, e.target.value)}
-                                                    style={{ padding: '0.5em', width: 'auto' }}
-                                                    >
+                                    {/* AND/OR Type - Multiple Courses and Sub-groups */}
+                                    {(group.type === JoinType.AND || group.type === JoinType.OR) && (
+                                        <div style={{ marginBottom: '1em' }}>
+                                            {/* Courses */}
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75em', alignItems: 'center', marginBottom: '0.75em' }}>
+                                                <span style={{ fontSize: '1.25em' }}>(</span>
 
-                                                    <option value="">Select...</option>
-                                                    {prereqOptions.map((code) => (
-                                                        <option key={code} value={code}>
-                                                            {code}
-                                                        </option>
+                                                {group.courses.map((c, ci) => (
+                                                    <div key={ci} style={{ display: 'flex', gap: '0.35em', alignItems: 'center' }}>
+
+                                                        {group.courses.length > 1 && (
+                                                            <button type="button" className="remove_course_btn" onClick={() => removeGroupCourse(gi, ci)}>×</button>
+                                                        )}
+                                                        
+                                                        <select
+                                                            value={c}
+                                                            onChange={(e) => updateGroupCourseInList(gi, ci, e.target.value)}
+                                                            style={{ padding: '0.5em', width: 'auto' }}>
+                                                            <option value="">Select...</option>
+                                                            {prereqOptions.map((code) => (
+                                                                <option key={code} value={code}>
+                                                                    {code}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        {/* Show the group's join type between courses */}
+                                                        {ci < group.courses.length - 1 && <span style={{ fontWeight: 700 }}>{group.type}</span>}
+                                                        
+                                                    </div>
+                                                ))}
+
+                                                <span style={{ fontSize: '1.25em' }}>)</span>
+
+                                            </div>
+
+                                            {/* Add course button */}
+                                            <div style={{ marginBottom: '0.75em' }}>
+                                                <button
+                                                    type="button"
+                                                    className="secondary-btn"
+                                                    onClick={() => addCourseToGroup(gi)}
+                                                    style={{ marginRight: '0.5em' }}>
+                                                    + Add course
+                                                </button>
+
+                                                {/* Add sub-group button */}
+                                                <button
+                                                    type="button"
+                                                    className="secondary-btn"
+                                                    onClick={() => addSubGroup(gi)}>
+                                                    + Add group
+                                                </button>
+                                            </div>
+
+                                            {/* Render sub-groups */}
+                                            {group.subGroups.length > 0 && (
+                                                <div style={{ marginTop: '0.75em', paddingLeft: '0.75em', borderLeft: '2px solid #cbd5e1' }}>
+                                                    {group.subGroups.map((subGroup, sgi) => (
+                                                        <div key={sgi} style={{ marginBottom: '0.5em' }}>
+                                                            {sgi > 0 && <span style={{ fontWeight: 700, fontSize: '0.9em', marginRight: '0.5em' }}>{group.type}</span>}
+                                                            {renderSubGroup(group, gi, sgi)}
+                                                        </div>
                                                     ))}
-                                                </select>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
-                                                {/* Show the group's join if exists */}
-                                                {group.join && <span style={{ fontWeight: 700 }}>{group.join}</span>}
-                                                
-                                            </div>
-                                        ))}
-
-                                        <span style={{ fontSize: '1.25em' }}>)</span>
-
-                                    </div>
-
-                                    {/* Add/remove group controls */}
-                                    <div style={{ marginTop: '0.75em', display: 'flex', gap: '0.75em' }}>
-                                        {/*<button type="button" className="secondary-btn" onClick={addNewGroup}>+ Add new group</button>*/}
-
-                                        {prereqState.groups.length > 1 && (
+                                    {/* Remove group button */}
+                                    {prereqState.groups.length > 1 && (
+                                        <div style={{ marginTop: '0.75em' }}>
                                             <button type="button" className="remove_group_btn" onClick={() => removeGroup(gi)}>Remove group</button>
-                                        )}
-
-
-                                        {/* Course-join buttons: show whenever there are 2+ courses */}
-                                        {group.courses.length > 1 && (
-                                            <div style={{ display: 'flex', background: '#3b82f6', borderRadius: '8px', color: 'white' }}>
-                                                <button
-                                                type="button"
-                                                className="secondary-btn"
-                                                onClick={() => setGroupJoin(gi, 'AND')}
-                                                >
-                                                and
-                                                </button>
-                                                <button
-                                                type="button"
-                                                className="secondary-btn"
-                                                onClick={() => setGroupJoin(gi, 'OR')}
-                                                >
-                                                or
-                                                </button>
-                                            </div>
-                                        )}
-
-                                        <button
-                                            type="button"
-                                            className="secondary-btn"
-                                            onClick={() => addCourseToGroup(gi)}
-                                            >
-                                            + Add course
-                                        </button>
-
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -534,8 +710,8 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                                 <span style={{ fontWeight: 700, color: '#475569' }}>Groups join:</span>
 
                                 <div style={{ display: 'flex', background: '#3b82f6', borderRadius: '8px', color: 'white' }}>
-                                    <button type="button" className="secondary-btn" onClick={() => setGroupsJoin('AND')}>and</button>
-                                    <button type="button" className="secondary-btn" onClick={() => setGroupsJoin('OR')}>or</button>
+                                    <button type="button" className="secondary-btn" onClick={() => setGroupsJoin(JoinType.AND)}>and</button>
+                                    <button type="button" className="secondary-btn" onClick={() => setGroupsJoin(JoinType.OR)}>or</button>
                                 </div>
                             </div>
                         )}
