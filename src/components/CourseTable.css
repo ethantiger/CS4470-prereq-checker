@@ -72,3 +72,35 @@
   margin: 0.5em 0;
   background: white;
   border-radius: 8px;
+}
+
+.action-button {
+  padding: 0.4em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  background: transparent;
+}
+
+.edit-button {
+  color: #3b82f6;
+}
+
+.edit-button:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.delete-button {
+  color: #dc2626;
+}
+
+.delete-button:hover {
+  background: #fef2f2;
+  color: #991b1b;
+}
+

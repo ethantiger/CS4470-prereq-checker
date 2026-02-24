@@ -1,5 +1,5 @@
 import { useState, Fragment } from 'react';
-import { IconCaretRightFilled, IconCaretDownFilled } from '@tabler/icons-react';
+import { IconCaretRightFilled, IconCaretDownFilled, IconEdit, IconTrash } from '@tabler/icons-react';
 import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup } from '@/types';
 import './CourseTable.css';
 
@@ -115,7 +115,8 @@ export default function CourseTable({ courses }: CourseTableProps) {
           <tr>
             <th style={{ width: '50px' }}></th>
             <th>Course Code</th>
-            <th>Antirequisites</th>
+            <th>Weight</th>
+            <th style={{ width: '120px' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -133,22 +134,34 @@ export default function CourseTable({ courses }: CourseTableProps) {
                 </td>
                 <td style={{ fontWeight: 600, color: '#1e293b' }}>{courseCode}</td>
                 <td>
-                  {courseData.antireqs.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4em' }}>
-                      {courseData.antireqs.map((antireq) => (
-                        <span key={antireq} className="antireq-chip">
-                          {antireq}
-                        </span>
-                      ))}
-                    </div>
+                  {courseData.credits ? (
+                    <span style={{ color: '#1e293b', fontWeight: 500 }}>{courseData.credits}</span>
                   ) : (
-                    <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>None</span>
+                    <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>N/A</span>
                   )}
+                </td>
+                <td>
+                  <div style={{ display: 'flex', gap: '0.5em' }}>
+                    <button
+                      className="action-button edit-button"
+                      onClick={() => console.log('Edit', courseCode)}
+                      aria-label={`Edit ${courseCode}`}
+                    >
+                      <IconEdit size={18} />
+                    </button>
+                    <button
+                      className="action-button delete-button"
+                      onClick={() => console.log('Delete', courseCode)}
+                      aria-label={`Delete ${courseCode}`}
+                    >
+                      <IconTrash size={18} />
+                    </button>
+                  </div>
                 </td>
               </tr>
               {openRows[courseCode] && (
                 <tr className="expanded-row">
-                  <td colSpan={3}>
+                  <td colSpan={4}>
                     <div className="expanded-content">
                       <h4 style={{ 
                         margin: '0 0 1em 0', 
@@ -160,12 +173,38 @@ export default function CourseTable({ courses }: CourseTableProps) {
                       }}>
                         Prerequisites
                       </h4>
-                      <div style={{ paddingLeft: '0.5em' }}>
+                      <div style={{ paddingLeft: '0.5em', marginBottom: '1.5em' }}>
                         {courseData.prereqs ? (
                           renderPrereqItem(courseData.prereqs)
                         ) : (
                           <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>
                             No prerequisites defined
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 style={{ 
+                        margin: '0 0 1em 0', 
+                        color: '#475569',
+                        fontSize: '1.1em',
+                        fontWeight: 600,
+                        borderBottom: '2px solid #e2e8f0',
+                        paddingBottom: '0.5em'
+                      }}>
+                        Antirequisites
+                      </h4>
+                      <div style={{ paddingLeft: '0.5em' }}>
+                        {courseData.antireqs.length > 0 ? (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5em' }}>
+                            {courseData.antireqs.map((antireq) => (
+                              <span key={antireq} className="antireq-chip">
+                                {antireq}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>
+                            No antirequisites defined
                           </span>
                         )}
                       </div>
