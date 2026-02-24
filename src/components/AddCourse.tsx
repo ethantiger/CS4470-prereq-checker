@@ -24,6 +24,8 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
     const [error, setError] = useState<string | null>(null);
     const courseCodeRef = useRef<HTMLInputElement>(null);
     const [prereqs, updatePrereqs] = useImmer<PrereqItem>(null);
+    const [courseInputs, setCourseInputs] = useState<{ [key: string]: string }>({});
+    const [activeCourseInput, setActiveCourseInput] = useState<string | null>(null);
 
     useEffect(() => {
         console.log(prereqs)
@@ -43,6 +45,16 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
     const renderPrereqItem = (item: PrereqItem, depth: number = 0, path: number[] = []): JSX.Element => {
         // Handle CoursePrereq type
         if (item.type === JoinType.COURSE) {
+            const pathKey = path.join('-');
+            const inputValue = courseInputs[pathKey] !== undefined ? courseInputs[pathKey] : item.name || '';
+            const isActive = activeCourseInput === pathKey;
+            
+            // Filter courses for autocomplete
+            const filteredCourses = Object.keys(courses)
+                .filter(code => code !== courseCode) // don't allow self
+                .filter(code => code.toLowerCase().includes(inputValue.toLowerCase()))
+                .sort();
+            
             return (
                 <div style={{ 
                     marginLeft: `${depth * 1.5}em`,
@@ -52,31 +64,82 @@ export default function AddCourse({ courses, onCancel, onAdded }: AddCourseProps
                     paddingTop: depth > 0 ? '0.5em' : '0',
                     paddingBottom: depth > 0 ? '0.5em' : '0'
                 }}>
-                    <div style={{ marginBottom: '0.75em', paddingLeft: '0.5em', display: 'flex', alignItems: 'center', gap: '0.75em' }}>
-                        <div>
+                    <div style={{ marginBottom: '0.75em', paddingLeft: '0.5em', display: 'flex', alignItems: 'flex-start', gap: '0.75em' }}>
+                        <div style={{ position: 'relative' }}>
                             <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Course</label>
-                            <select
-                                value={item.name || ''}
-                                onChange={(e) => updatePrereqs(draft => {
-                                    const target = getNestedItem(draft, path) as CoursePrereq;
-                                    target.name = e.target.value;
-                                })}
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    setCourseInputs(prev => ({ ...prev, [pathKey]: newValue }));
+                                    updatePrereqs(draft => {
+                                        const target = getNestedItem(draft, path) as CoursePrereq;
+                                        target.name = newValue;
+                                    });
+                                }}
+                                onFocus={() => setActiveCourseInput(pathKey)}
+                                onBlur={() => setTimeout(() => setActiveCourseInput(null), 200)}
+                                placeholder="Type to search..."
                                 style={{ 
                                     padding: '0.5em 0.6em', 
-                                    width: 'auto', 
+                                    width: '200px', 
                                     fontSize: '0.9em',
                                     border: '2px solid #e2e8f0',
                                     borderRadius: '6px',
                                     background: 'white',
                                     transition: 'all 0.15s ease'
+                                }}
+                            />
+                            
+                            {/* Autocomplete dropdown */}
+                            {isActive && inputValue.trim() !== '' && filteredCourses.length > 0 && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    width: '200px',
+                                    marginTop: '0.25em',
+                                    background: 'white',
+                                    border: '2px solid #e2e8f0',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden',
+                                    zIndex: 10,
+                                    maxHeight: '180px',
+                                    overflowY: 'auto',
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
                                 }}>
-                                <option value="">Select course...</option>
-                                {Object.keys(courses).sort().map((code) => (
-                                    <option key={code} value={code}>
-                                        {code}
-                                    </option>
-                                ))}
-                            </select>
+                                    {filteredCourses.slice(0, 10).map((code) => (
+                                        <button
+                                            key={code}
+                                            type="button"
+                                            onClick={() => {
+                                                setCourseInputs(prev => ({ ...prev, [pathKey]: code }));
+                                                updatePrereqs(draft => {
+                                                    const target = getNestedItem(draft, path) as CoursePrereq;
+                                                    target.name = code;
+                                                });
+                                                setActiveCourseInput(null);
+                                            }}
+                                            style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                padding: '0.6em 0.75em',
+                                                border: 'none',
+                                                background: 'white',
+                                                cursor: 'pointer',
+                                                transition: 'background 0.1s ease',
+                                                color: '#1e293b',
+                                                fontSize: '0.95em'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = '#eef2ff'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                        >
+                                            {code}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Min Grade (%)</label>
