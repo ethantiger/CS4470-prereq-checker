@@ -9,9 +9,27 @@ interface CourseTableProps {
 
 export default function CourseTable({ courses }: CourseTableProps) {
   const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
+  const [deleteModal, setDeleteModal] = useState<{ show: boolean; courseCode: string | null }>({ show: false, courseCode: null });
 
   const toggleRow = (courseCode: string) => {
     setOpenRows((prev) => ({ ...prev, [courseCode]: !prev[courseCode] }));
+  };
+
+  const handleDeleteClick = (courseCode: string) => {
+    setDeleteModal({ show: true, courseCode });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteModal.courseCode) {
+      await window.database.deleteCourse(deleteModal.courseCode);
+      setDeleteModal({ show: false, courseCode: null });
+      // Optionally reload or update UI
+      window.location.reload();
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ show: false, courseCode: null });
   };
 
   const renderPrereqItem = (item: PrereqItem, depth: number = 0): JSX.Element => {
@@ -109,6 +127,37 @@ export default function CourseTable({ courses }: CourseTableProps) {
   }
 
   return (
+    <>
+    {/* Delete Confirmation Modal */}
+    {deleteModal.show && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3 style={{ margin: '0 0 1em 0', color: '#1e293b', fontSize: '1.25em', fontWeight: 600 }}>
+            Delete Course
+          </h3>
+          <p style={{ margin: '0 0 1.5em 0', color: '#475569', lineHeight: 1.6 }}>
+            Are you sure you want to delete <strong>{deleteModal.courseCode}</strong>?
+            <br />
+            This action cannot be undone.
+          </p>
+          <div style={{ display: 'flex', gap: '1em', justifyContent: 'flex-end' }}>
+            <button
+              className="modal-button modal-button-cancel"
+              onClick={handleDeleteCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="modal-button modal-button-delete"
+              onClick={handleDeleteConfirm}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    
     <div className="table-card">
       <table className="table">
         <thead>
@@ -151,7 +200,7 @@ export default function CourseTable({ courses }: CourseTableProps) {
                     </button>
                     <button
                       className="action-button delete-button"
-                      onClick={() => console.log('Delete', courseCode)}
+                      onClick={() => handleDeleteClick(courseCode)}
                       aria-label={`Delete ${courseCode}`}
                     >
                       <IconTrash size={18} />
@@ -217,5 +266,6 @@ export default function CourseTable({ courses }: CourseTableProps) {
         </tbody>
       </table>
     </div>
+    </>
   );
 }
