@@ -1,133 +1,181 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useStudents } from '@/stores/useStudent';
-import { checkCourse } from '@/prereq checker/logic';
+import { checkCourse, normalizeCourseCode } from '@/prereq checker/logic';
+import { coursesDB } from '@/data/coursesDB';
 
 export default function Students() {
   const students = useStudents();
-  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
-
-  const toggleStudent = (index: number) => {
-    setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
-  };
+  
+  // State for the search bar and custom dropdown
+  const [searchInput, setSearchInput] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Clean the input as the user types
+  const targetCourse = normalizeCourseCode(searchInput);
+  const isValidCourse = !!coursesDB[targetCourse];
+  
+  const allCourseCodes = Object.keys(coursesDB);
+  
+  // Filter the dropdown list based on what the user types
+  const filteredCourses = allCourseCodes.filter(code => 
+    code.toLowerCase().includes(searchInput.toLowerCase())
+  );
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <h1 style={{ color: '#111827', marginBottom: '30px', fontSize: '2rem', fontWeight: '700' }}>
-        Students
-      </h1>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px', fontFamily: 'system-ui, sans-serif' }}>
+      
+      {/* Header & Search Area */}
+      <div style={{ marginBottom: '40px' }}>
+        <h1 style={{ color: '#111827', fontSize: '2rem', fontWeight: '700', marginBottom: '16px' }}>
+          Course Eligibility Checker
+        </h1>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative', maxWidth: '400px' }}>
+          <label htmlFor="course-search" style={{ color: '#4b5563', fontWeight: '600', fontSize: '0.9rem' }}>
+            Select a Target Course
+          </label>
+          
+          <div style={{ position: 'relative' }}>
+            <input
+              id="course-search"
+              type="text"
+              placeholder="e.g., COMPSCI 1027"
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              onBlur={() => {
+                // Small delay so the user can actually click an item before the menu closes
+                setTimeout(() => setIsDropdownOpen(false), 150);
+              }}
+              style={{
+                padding: '12px 16px',
+                borderRadius: '8px',
+                border: isDropdownOpen ? '1px solid #3b82f6' : '1px solid #d1d5db',
+                fontSize: '1rem',
+                outline: 'none',
+                width: '100%',
+                boxShadow: isDropdownOpen ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : '0 1px 2px rgba(0,0,0,0.05)',
+                boxSizing: 'border-box',
+                transition: 'all 0.2s ease'
+              }}
+            />
+            
+            {/* The Custom Dropdown Menu */}
+            {isDropdownOpen && (
+              <ul style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                marginTop: '4px',
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                maxHeight: '250px',
+                overflowY: 'auto',
+                listStyle: 'none',
+                padding: '8px 0',
+                margin: 0,
+                zIndex: 50
+              }}>
+                {filteredCourses.length === 0 ? (
+                  <li style={{ padding: '10px 16px', color: '#9ca3af', fontSize: '0.9rem', textAlign: 'center' }}>
+                    No courses found
+                  </li>
+                ) : (
+                  filteredCourses.map(code => (
+                    <li 
+                      key={code}
+                      onClick={() => {
+                        setSearchInput(code);
+                        setIsDropdownOpen(false);
+                      }}
+                      onMouseDown={(e) => e.preventDefault()} // Prevents the input from losing focus immediately
+                      style={{
+                        padding: '10px 16px',
+                        cursor: 'pointer',
+                        color: '#374151',
+                        fontSize: '0.95rem',
+                        transition: 'background-color 0.1s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      {code}
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
 
       {(!students || students.length === 0) ? (
         <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px dashed #d1d5db', color: '#6b7280' }}>
           <p>No students loaded.</p>
         </div>
+      ) : !searchInput ? (
+        <div style={{ padding: '60px', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <span style={{ fontSize: '2.5rem' }}>🔍</span>
+          <h2 style={{ color: '#334155', marginTop: '16px' }}>Search for a course</h2>
+          <p style={{ color: '#64748b' }}>Select a course above to see which students are eligible to enroll.</p>
+        </div>
+      ) : !isValidCourse ? (
+        <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#fef2f2', borderRadius: '12px', border: '1px solid #fecaca' }}>
+          <p style={{ color: '#991b1b', fontWeight: 'bold' }}>Course "{targetCourse}" not found in database.</p>
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {students.map((student, index) => {
-            const courseResults = student.courses.map(course => ({
-              course,
-              result: checkCourse(course.code, student)
-            }));
+          
+          <h2 style={{ color: '#374151', fontSize: '1.2rem', marginBottom: '8px' }}>
+            Eligibility for <span style={{ color: '#1d4ed8' }}>{targetCourse}</span>
+          </h2>
 
-            const allPassed = courseResults.every(cr => cr.result.passed);
-            const isExpanded = !!expanded[index];
+          {students.map((student, index) => {
+            const result = checkCourse(targetCourse, student);
 
             return (
               <div 
                 key={index} 
                 style={{ 
                   backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb', 
-                  borderRadius: '12px', 
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-                  transition: 'box-shadow 0.2s ease'
+                  border: `1px solid ${result.passed ? '#a7f3d0' : '#fecaca'}`, 
+                  borderLeft: `6px solid ${result.passed ? '#10b981' : '#ef4444'}`,
+                  borderRadius: '8px', 
+                  padding: '20px',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.02)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
                 }}
               >
-                {/* Clickable Header */}
-                <div 
-                  onClick={() => toggleStudent(index)}
-                  style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    padding: '20px 24px', 
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    backgroundColor: isExpanded ? '#f9fafb' : '#ffffff',
-                    borderBottom: isExpanded ? '1px solid #e5e7eb' : '1px solid transparent',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {/* Rotating Arrow */}
-                    <span style={{ 
-                      color: '#9ca3af', 
-                      fontSize: '0.9em',
-                      display: 'inline-block',
-                      transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.2s ease'
-                    }}>
-                      ▶
-                    </span>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '600', color: '#111827' }}>
-                      {student.name || `Student ${index + 1}`}
-                    </h2>
-                  </div>
-                  
-                  {/* Status Indicator */}
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    padding: '6px 12px', 
-                    borderRadius: '9999px',
-                    backgroundColor: allPassed ? '#ecfdf5' : '#fffbeb',
-                    border: `1px solid ${allPassed ? '#a7f3d0' : '#fde68a'}`
-                  }}>
-                    <span style={{ fontSize: '1.1em' }}>{allPassed ? '✅' : '⚠️'}</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: '500', color: allPassed ? '#065f46' : '#92400e' }}>
-                      {allPassed ? 'All Clear' : 'Action Required'}
-                    </span>
-                  </div>
+                <div>
+                  <h3 style={{ margin: '0 0 4px 0', color: '#111827', fontSize: '1.1rem' }}>
+                    {student.name || `Student ${index + 1}`}
+                  </h3>
                 </div>
 
-                {/* Collapsible Content */}
-                {isExpanded && (
-                  <div style={{ padding: '0' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                          <th style={{ padding: '12px 24px', fontSize: '0.75rem', fontWeight: 'bold', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Course
-                          </th>
-                          <th style={{ padding: '12px 24px', fontSize: '0.75rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {courseResults.map(({ course, result }, i) => (
-                          <tr key={i} style={{ borderBottom: i === courseResults.length - 1 ? 'none' : '1px solid #f3f4f6' }}>
-                            <td style={{ padding: '16px 24px', color: '#374151', fontWeight: '500' }}>
-                              {course.code}
-                            </td>
-                            <td style={{ padding: '16px 24px' }}>
-                              {result.passed ? (
-                                <span style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  ✅ <span style={{ fontSize: '0.9em' }}>{result.reason || 'Cleared'}</span>
-                                </span>
-                              ) : (
-                                <span style={{ color: '#b45309', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  ❌ <span style={{ fontSize: '0.9em', fontWeight: '500' }}>{result.reason}</span>
-                                </span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                <div style={{ textAlign: 'right' }}>
+                  {result.passed ? (
+                    <div style={{ color: '#059669', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      ✅ Eligible
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <span style={{ color: '#dc2626', fontWeight: 'bold' }}>
+                        ❌ Not Eligible
+                      </span>
+                      <span style={{ color: '#b91c1c', fontSize: '0.85rem', backgroundColor: '#fee2e2', padding: '4px 8px', borderRadius: '4px' }}>
+                        {result.reason}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}

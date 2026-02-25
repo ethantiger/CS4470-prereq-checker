@@ -29,7 +29,7 @@
           "type": "OR",
           "requirements": [
             { "type": "COURSE", "name": "COMPSCI 1025", "minGrade": 65 },
-            { "type": "COURSE", "name": "COMPSCI 1026A", "minGrade":65 },
+            { "type": "COURSE", "name": "COMPSCI 1026", "minGrade":65 },
             { "type": "COURSE", "name": "DATASCI 1200", "minGrade": 65 },
             { "type": "COURSE", "name": "ENGSCI 1036", "minGrade": 65 }
           ]
