@@ -44,16 +44,6 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             <span className="nav-icon"><IconDatabase /></span>
             {!isCollapsed && <span className="nav-text">Database</span>}
           </Link>
-
-          {/* NEW TAB: Students */}
-          <Link
-            to="/students"
-            className={`nav-item ${isActive('/students') ? 'active' : ''}`}
-            title="Students"
-          >
-            <span className="nav-icon"><IconUsers /></span>
-            {!isCollapsed && <span className="nav-text">Students</span>}
-          </Link>
         </nav>
       </div>
 

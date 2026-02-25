@@ -1,6 +1,4 @@
-import { Requirement } from '@/prereq checker/prereqTypes';
-import { Student } from '@/types';
-import { coursesDB } from '@/data/coursesDB';
+import { Student, PrereqItem, CoursesDatabase } from '@/types';
 
 // Helper: Strips trailing letters (A, B, F, G, etc.) from course codes
 export function normalizeCourseCode(code: string): string {
@@ -11,7 +9,7 @@ export function normalizeCourseCode(code: string): string {
 
 
 //Evaluate AND/OR cases
-export function evaluateRequirement(req: Requirement, student: Student): { passed: boolean; missing: string[] } {
+export function evaluateRequirement(req: PrereqItem, student: Student): { passed: boolean; missing: string[] } {
   switch (req.type) {
     case "AND": {
       const missing: string[] = [];
@@ -87,9 +85,9 @@ export function evaluateRequirement(req: Requirement, student: Student): { passe
 }
 
 
-export function checkCourse(courseCode: string, student: Student) {
+export function checkCourse(courseCode: string, student: Student, coursesDB: CoursesDatabase) {
   const cleanTargetCode = normalizeCourseCode(courseCode);
-  const courseInfo = (coursesDB as any)[cleanTargetCode];
+  const courseInfo = coursesDB[cleanTargetCode];
 
   if (!courseInfo) {
     return { passed: true, reason: `Course ${cleanTargetCode} not found in DB` };
