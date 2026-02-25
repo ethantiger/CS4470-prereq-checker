@@ -3,6 +3,7 @@ import { CoursesDatabase } from '@/types';
 
 export default function RunCheck({ setCourse, courses }: { setCourse: (course: string) => void, courses: CoursesDatabase }) {
   const [inputValue, setInputValue] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSetCourse = () => {
     if (inputValue.trim()) {
@@ -28,14 +29,24 @@ export default function RunCheck({ setCourse, courses }: { setCourse: (course: s
         alignItems: 'center',
         width: '100%',
         maxWidth: '500px',
-        padding: '0 1rem'
+        padding: '0 1rem',
+        position: 'relative'
       }}>
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-          onBlur={(e) => e.target.style.borderColor = '#ddd'}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setShowDropdown(true);
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#3b82f6';
+            setShowDropdown(true);
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = '#ddd';
+            setTimeout(() => setShowDropdown(false), 150);
+          }}
           placeholder="Enter course code..."
           style={{
             flex: 1,
@@ -49,7 +60,7 @@ export default function RunCheck({ setCourse, courses }: { setCourse: (course: s
         />
         
         {/* Autocomplete dropdown */}
-        {inputValue.trim() !== '' && filteredCourses.length > 0 && (
+        {showDropdown && inputValue.trim() !== '' && filteredCourses.length > 0 && (
           <div style={{
             position: 'absolute',
             top: '100%',
@@ -71,6 +82,7 @@ export default function RunCheck({ setCourse, courses }: { setCourse: (course: s
                 type="button"
                 onClick={() => {
                     setInputValue(code);
+                    setShowDropdown(false);
                 }}
                 style={{
                     width: '100%',

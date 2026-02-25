@@ -8,11 +8,12 @@ import {
 } from '@tabler/icons-react';
 import { useStudents } from '@/stores/useStudent';
 import './StudentTable.css';
+import { CoursesDatabase } from '@/types';
 
 type SortKey = 'id' | 'name';
 type SortDir = 'asc' | 'desc';
 
-export default function StudentTable() {
+export default function StudentTable({course, courses}: {course: string, courses: CoursesDatabase}) {
   // ✅ Use student.id as the key (stable across search/sort)
   const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
   const [search, setSearch] = useState('');

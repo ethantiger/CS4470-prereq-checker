@@ -27,7 +27,7 @@ export default function Prereq() {
       ) : (
         <>
           <RunCheck setCourse={setCourse} courses={courses}/>
-          <StudentTable courses={courses} />
+          <StudentTable course={course} courses={courses} />
         </>
       )}
     </div>
