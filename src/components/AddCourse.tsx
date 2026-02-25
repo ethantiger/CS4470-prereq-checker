@@ -462,7 +462,7 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                         />
                     </div>
 
-                    {/* Department */}           {/* add select??? */}
+                    {/* Department */}
                     <div className="form-field">
                         <label htmlFor="department">Department (optional)</label>
                         <input
