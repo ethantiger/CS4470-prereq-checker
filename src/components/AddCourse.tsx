@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useImmer } from 'use-immer';
 import './AddCourse.css';
 import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup, CourseData } from '@/types';
@@ -29,10 +29,6 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
     const [prereqs, updatePrereqs] = useImmer<PrereqItem>(initialCourseData?.prereqs || null);
     const [courseInputs, setCourseInputs] = useState<{ [key: string]: string }>({});
     const [activeCourseInput, setActiveCourseInput] = useState<string | null>(null);
-
-    useEffect(() => {
-        console.log(prereqs)
-    }, [prereqs])
 
     // Helper to navigate to the correct nested object using the path
     const getNestedItem = (draft: PrereqItem, path: number[]): PrereqItem => {
