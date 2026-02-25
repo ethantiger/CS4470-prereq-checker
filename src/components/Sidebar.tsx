@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import './Sidebar.css';
-import { IconDatabase, IconListCheck } from '@tabler/icons-react';
+import { IconDatabase, IconListCheck, IconUsers } from '@tabler/icons-react';
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -25,6 +25,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="sidebar-nav">
+          {/* Prereq Checker */}
           <Link
             to="/"
             className={`nav-item ${isActive('/') ? 'active' : ''}`}
@@ -34,6 +35,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             {!isCollapsed && <span className="nav-text">Check Prereqs</span>}
           </Link>
 
+          {/* Database */}
           <Link
             to="/db"
             className={`nav-item ${isActive('/db') ? 'active' : ''}`}
@@ -41,6 +43,16 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           >
             <span className="nav-icon"><IconDatabase /></span>
             {!isCollapsed && <span className="nav-text">Database</span>}
+          </Link>
+
+          {/* NEW TAB: Students */}
+          <Link
+            to="/students"
+            className={`nav-item ${isActive('/students') ? 'active' : ''}`}
+            title="Students"
+          >
+            <span className="nav-icon"><IconUsers /></span>
+            {!isCollapsed && <span className="nav-text">Students</span>}
           </Link>
         </nav>
       </div>
