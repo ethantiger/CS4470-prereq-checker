@@ -1,5 +1,13 @@
 import { useState, Fragment } from 'react';
-import { IconCaretRightFilled, IconCaretDownFilled, IconEdit, IconTrash } from '@tabler/icons-react';
+import { 
+  IconCaretRightFilled, 
+  IconCaretDownFilled, 
+  IconEdit, 
+  IconTrash,
+  IconChevronUp,
+  IconChevronDown,
+  IconArrowsSort, 
+} from '@tabler/icons-react';
 import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup } from '@/types';
 import './CourseTable.css';
 
@@ -172,6 +180,11 @@ export default function CourseTable({ courses, onEdit }: CourseTableProps) {
     return sortDir === 'asc' ? result : -result;
   });
 
+  const sortIconFor = (key: SortKey) => {
+    if (sortKey !== key) return <IconArrowsSort size={16} />;
+    return sortDir === 'asc' ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />;
+  };
+
   if (courseEntries.length === 0) {
     return (
       <div className="table-card">
@@ -245,7 +258,7 @@ export default function CourseTable({ courses, onEdit }: CourseTableProps) {
                       onClick={() => toggleSort('courseCode')}
                       aria-label="Sort by course code"
                     >
-                      {sortKey === 'courseCode' ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}
+                      {sortIconFor('courseCode')}
                     </button>
                   </div>
                 </th>
@@ -260,7 +273,7 @@ export default function CourseTable({ courses, onEdit }: CourseTableProps) {
                       onClick={() => toggleSort('weight')}
                       aria-label="Sort by weight"
                     >
-                      {sortKey === 'weight' ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}
+                      {sortIconFor('weight')}
                     </button>
                   </div>
                 </th>

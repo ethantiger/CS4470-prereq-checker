@@ -1,6 +1,5 @@
 import { Student } from '@/types';
 import { create } from 'zustand';
-import { useEffect } from 'react';
 
 interface StudentStoreActions {
   addStudent: (student: Student) => void;
@@ -35,9 +34,7 @@ const useStudentStore = create<StudentState>()(
       },
     }
   }),
-  
 );
-
 
 export const useStudents = () => useStudentStore((state) => state.students);
 export const useStudentActions = () => useStudentStore((state) => state.actions);

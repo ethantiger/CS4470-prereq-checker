@@ -8,11 +8,13 @@ import {
 } from '@tabler/icons-react';
 import { useStudents } from '@/stores/useStudent';
 import './StudentTable.css';
+import { CoursesDatabase } from '@/types';
+import { checkCourse, normalizeCourseCode } from '@/prereq checker/logic';
 
 type SortKey = 'id' | 'name';
 type SortDir = 'asc' | 'desc';
 
-export default function StudentTable() {
+export default function StudentTable({course, courses}: {course: string, courses: CoursesDatabase}) {
   // ✅ Use student.id as the key (stable across search/sort)
   const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
   const [search, setSearch] = useState('');
@@ -53,7 +55,24 @@ export default function StudentTable() {
     return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
   };
 
-  const sortedStudents = [...filteredStudents].sort((a, b) => {
+  // Check eligibility for each student if course exists
+  const targetCourse = normalizeCourseCode(course);
+  const isValidCourse = !!courses[targetCourse];
+  
+  const studentsWithEligibility = filteredStudents.map(student => ({
+    ...student,
+    eligibility: isValidCourse ? checkCourse(targetCourse, student, courses) : null
+  }));
+
+  const sortedStudents = [...studentsWithEligibility].sort((a, b) => {
+    // First sort by eligibility (ineligible first)
+    if (isValidCourse && a.eligibility && b.eligibility) {
+      if (a.eligibility.passed !== b.eligibility.passed) {
+        return a.eligibility.passed ? 1 : -1;
+      }
+    }
+    
+    // Then by the selected sort key
     const aVal = sortKey === 'id' ? a.id : (a.name ?? '');
     const bVal = sortKey === 'id' ? b.id : (b.name ?? '');
     const result = compare(aVal, bVal);
@@ -116,8 +135,7 @@ export default function StudentTable() {
                     </button>
                   </div>
                 </th>
-
-                <th>Status</th>
+                <th>Eligibility</th>
               </tr>
             </thead>
 
@@ -138,12 +156,29 @@ export default function StudentTable() {
                       </td>
                       <td>{student.id}</td>
                       <td>{student.name || 'N/A'}</td>
-                      <td>{student.courses.length} courses loaded</td>
+                      {isValidCourse && student.eligibility && (
+                        <td>
+                          {student.eligibility.passed ? (
+                            <div style={{ color: '#059669', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              ✅ Eligible
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <span style={{ color: '#dc2626', fontWeight: 'bold' }}>
+                                ❌ Not Eligible
+                              </span>
+                              <span style={{ color: '#b91c1c', fontSize: '0.8rem', backgroundColor: '#fee2e2', padding: '3px 8px', borderRadius: '4px' }}>
+                                {student.eligibility.reason}
+                              </span>
+                            </div>
+                          )}
+                        </td>
+                      )}
                     </tr>
 
                     {openRows[rowKey] && (
                       <tr>
-                        <td colSpan={4}>
+                        <td colSpan={isValidCourse ? 5 : 4}>
                           <table style={{ width: '100%', background: '#f9f9f9', margin: '0.5em 0' }}>
                             <thead>
                               <tr>
