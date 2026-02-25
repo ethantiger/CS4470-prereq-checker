@@ -41,7 +41,7 @@ const createWindow = () => {
 app.on('ready', async () => {
   await db.initialize();
   
-  // Register IPC handlers
+  // Register IPC handlers for courses
   ipcMain.handle('db:getAllCourses', () => db.getAllCourses());
   ipcMain.handle('db:getCourse', (_, courseCode) => db.getCourse(courseCode));
   ipcMain.handle('db:addCourse', (_, courseCode, courseData) => 

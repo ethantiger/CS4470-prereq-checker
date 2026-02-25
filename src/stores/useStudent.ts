@@ -4,7 +4,9 @@ import { useEffect } from 'react';
 
 interface StudentStoreActions {
   addStudent: (student: Student) => void;
+  addStudents: (students: Student[]) => void;
   clearStudents: () => void;
+  deleteStudent: (studentId: number) => void;
 }
 
 interface StudentState {
@@ -18,9 +20,19 @@ const useStudentStore = create<StudentState>()(
     actions: {
       addStudent: (student) => {
         const { students } = get();
-        set({ students: students ? [...students, student] : [student] });
+        set({ students: [...students, student] });
       },
-      clearStudents: () => set({ students: null }),
+      addStudents: (newStudents) => {
+        const { students } = get();
+        set({ students: [...students, ...newStudents] });
+      },
+      clearStudents: () => {
+        set({ students: [] });
+      },
+      deleteStudent: (studentId: number) => {
+        const { students } = get();
+        set({ students: students.filter(s => s.id !== studentId) });
+      },
     }
   }),
   

@@ -12,21 +12,36 @@ export interface Course {
   grade: number | null;
 }
 
-export interface Prereq {
-  requirements: Requirement[];
-  credits: number;
+export enum JoinType {
+    AND = 'AND',
+    OR = 'OR',
+    COURSE = 'COURSE'
 }
 
-export interface Requirement {
-  course: string;
-  grade: number;
+export interface CoursePrereq {
+    type: JoinType.COURSE;
+    name: string;
+    minGrade: number;
 }
+
+export interface PrereqGroup {
+    type: JoinType.AND | JoinType.OR;
+    requirements: PrereqItem[];
+    credits?: number;
+}
+
+export type PrereqItem = PrereqGroup | CoursePrereq;
 
 export interface CourseData {
-  prereqs: Prereq[];
+  credits: number | null;
+  prereqs: PrereqItem;
   antireqs: string[];
 }
 
 export interface CoursesDatabase {
   [course: string]: CourseData;
+}
+
+export interface AddCourse { // ADDED!!!!!!!
+
 }
