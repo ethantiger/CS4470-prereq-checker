@@ -1,5 +1,6 @@
 import { Student } from '@/types';
 import { create } from 'zustand';
+import { mockStudents } from './mockStudents';
 
 interface StudentStoreActions {
   addStudent: (student: Student) => void;
