@@ -56,7 +56,7 @@ export default function ImportExportCourses({ onImport }: { onImport: () => void
             fontWeight: 600
           }}
         >
-          Import Courses JSON
+          Import Courses
         </button>
       </label>
       <button
@@ -72,7 +72,7 @@ export default function ImportExportCourses({ onImport }: { onImport: () => void
           fontWeight: 600
         }}
       >
-        Export Courses JSON
+        Export Courses
       </button>
       <a ref={downloadRef} style={{ display: 'none' }}>Download</a>
     </div>
