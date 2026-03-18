@@ -262,7 +262,13 @@ describe('checkCourse', () => {
     expect(result.flags).toContain('CALCULUS1500 passed with CR/PAS');
   });
 
-  todo('handles antirequisites properly');
+  it('handles antirequisites properly', () => {
+    const student = makeStudent([{ code: 'MATH2151', grade: 70 }]);
+    const result = checkCourse('COMPSCI2214', student, db);
+    expect(result.passed).toBe(false);
+    expect(result.reason).toContain('antirequisite');
+  });
+
   todo('handles special cases like COVID');
   todo('handles special cases like Program Status');
 });

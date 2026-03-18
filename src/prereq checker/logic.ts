@@ -95,6 +95,13 @@ export function checkCourse(courseCode: string, student: Student, coursesDB: Cou
   const cleanTargetCode = normalizeCourseCode(courseCode);
   const courseInfo = coursesDB[cleanTargetCode];
 
+  for (const c in student.courses) {
+    const normalizedStudentCode = normalizeCourseCode(student.courses[c].code);
+    if (courseInfo.antireqs.find((antireq: string) => normalizeCourseCode(antireq) === normalizedStudentCode)) {
+      return { passed: false, reason: `Failed due to antirequisite: ${student.courses[c].code}` };
+    }
+  }
+
   if (!courseInfo) {
     return { passed: true, reason: `Course ${cleanTargetCode} not found in DB` };
   }
