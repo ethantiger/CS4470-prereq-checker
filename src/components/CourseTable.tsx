@@ -8,7 +8,7 @@ import {
   IconChevronDown,
   IconArrowsSort, 
 } from '@tabler/icons-react';
-import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup } from '@/types';
+import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup, PrereqGroupWithCredits } from '@/types';
 import './CourseTable.css';
 
 interface CourseTableProps {
@@ -101,7 +101,7 @@ export default function CourseTable({ courses, onEdit }: CourseTableProps) {
       );
     }
 
-    const group = item as PrereqGroup;
+    const group = item as PrereqGroup | PrereqGroupWithCredits;
     return (
       <div
         style={{
@@ -125,7 +125,7 @@ export default function CourseTable({ courses, onEdit }: CourseTableProps) {
           }}
         >
           {group.type}
-          {group.credits && (
+          {'credits' in group && group.credits !== undefined && (
             <span style={{ marginLeft: '0.5em', color: '#64748b', fontWeight: 500 }}>
               ({group.credits} credits)
             </span>

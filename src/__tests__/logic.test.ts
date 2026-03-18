@@ -58,14 +58,14 @@ describe('evaluateRequirement – COURSE', () => {
 
   it('passes when the student has the course with a sufficient grade', () => {
     const student = makeStudent([{ code: 'COMPSCI1025', grade: 75 }]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(true);
     expect(result.missing).toHaveLength(0);
   });
 
   it('fails when the student has the course but grade is too low', () => {
     const student = makeStudent([{ code: 'COMPSCI1025', grade: 55 }]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(false);
     expect(result.missing[0]).toContain('COMPSCI1025');
     expect(result.missing[0]).toContain('60%');
@@ -73,7 +73,7 @@ describe('evaluateRequirement – COURSE', () => {
 
   it('fails when the student has never taken the course', () => {
     const student = makeStudent([]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(false);
     expect(result.missing).toContain('COMPSCI1025');
   });
@@ -92,7 +92,7 @@ describe('evaluateRequirement – COURSE', () => {
   it('normalizes course codes when matching', () => {
     // Student transcript may have suffix "A" on the code
     const student = makeStudent([{ code: 'COMPSCI1025A', grade: 80 }]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(true);
   });
 });
@@ -115,19 +115,19 @@ describe('evaluateRequirement – AND', () => {
       { code: 'COMPSCI2210', grade: 75 },
       { code: 'COMPSCI2211', grade: 70 },
     ]);
-    expect(evaluateRequirement(req, student).passed).toBe(true);
+    expect(evaluateRequirement(req, student, {}).passed).toBe(true);
   });
 
   it('fails when one course is missing', () => {
     const student = makeStudent([{ code: 'COMPSCI2210', grade: 75 }]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(false);
     expect(result.missing).toContain('COMPSCI2211');
   });
 
   it('fails when both courses are missing and reports both', () => {
     const student = makeStudent([]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(false);
     expect(result.missing).toHaveLength(2);
   });
@@ -149,12 +149,12 @@ describe('evaluateRequirement – OR', () => {
 
   it('passes when at least one course is satisfied', () => {
     const student = makeStudent([{ code: 'COMPSCI2101', grade: 80 }]);
-    expect(evaluateRequirement(req, student).passed).toBe(true);
+    expect(evaluateRequirement(req, student, {}).passed).toBe(true);
   });
 
   it('fails when neither course is satisfied', () => {
     const student = makeStudent([]);
-    const result = evaluateRequirement(req, student);
+    const result = evaluateRequirement(req, student, {});
     expect(result.passed).toBe(false);
     expect(result.missing.length).toBeGreaterThan(0);
   });
@@ -164,7 +164,7 @@ describe('evaluateRequirement – OR', () => {
       { code: 'COMPSCI1027', grade: 40 },
       { code: 'COMPSCI2101', grade: 75 },
     ]);
-    expect(evaluateRequirement(req, student).passed).toBe(true);
+    expect(evaluateRequirement(req, student, {}).passed).toBe(true);
   });
 });
 
@@ -191,6 +191,7 @@ describe('checkCourse', () => {
           { type: JoinType.COURSE, name: 'COMPSCI1020', minGrade: 60 },
           {
             type: JoinType.OR,
+            credits: 1.0,
             requirements: [
               { type: JoinType.COURSE, name: 'APPLMATH1201', minGrade: 60 },
               { type: JoinType.COURSE, name: 'CALCULUS1000', minGrade: 60 },
@@ -218,7 +219,7 @@ describe('checkCourse', () => {
   };
 
   it('passes when the student meets all prerequisites', () => {
-    const student = makeStudent([{ code: 'COMPSCI1027', grade: 80 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 }]);
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 80 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 }, { code: 'CALCULUS1000', grade: 85}]);
     const result = checkCourse('COMPSCI2214', student, db);
     expect(result.passed).toBe(true);
     expect(result.reason).toBe('Prerequisites satisfied');
@@ -233,7 +234,7 @@ describe('checkCourse', () => {
   });
 
   it('fails when the student has taken a prerequisite but with too low a grade', () => {
-    const student = makeStudent([{ code: 'COMPSCI1027', grade: 50 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 }]);
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 50 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 }, { code: 'CALCULUS1000', grade: 85 }]);
     const result = checkCourse('COMPSCI2214', student, db);
     expect(result.passed).toBe(false);
     expect(result.reason).toContain('COMPSCI1027');
@@ -255,7 +256,7 @@ describe('checkCourse', () => {
   });
 
   it('flags courses passed with CR/PAS', () => {
-    const student = makeStudent([{ code: 'COMPSCI1027', grade: 'CR' }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 'PAS' }]);
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 'CR' }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 'PAS' }, { code: 'CALCULUS1000', grade: 'PAS' }]);
     const result = checkCourse('COMPSCI2214', student, db);
     expect(result.passed).toBe(true);
     expect(result.flags).toContain('COMPSCI1027 passed with CR/PAS');
@@ -269,6 +270,12 @@ describe('checkCourse', () => {
     expect(result.reason).toContain('antirequisite');
   });
 
-  todo('handles special cases like COVID');
+  it('fails if not enough credits are earned from the OR group', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 80 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 },]);
+    const result = checkCourse('COMPSCI2214', student, db);
+    expect(result.passed).toBe(false);
+    expect(result.reason).toContain('Requires at least 1 credits from');
+  });
+
   todo('handles special cases like Program Status');
 });

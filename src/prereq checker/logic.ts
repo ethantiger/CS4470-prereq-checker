@@ -1,4 +1,4 @@
-import { Student, PrereqItem, CoursesDatabase } from '@/types';
+import { Student, PrereqItem, CoursesDatabase, PrereqGroupWithCredits } from '@/types';
 
 // Helper: Strips trailing letters (A, B, F, G, etc.) from course codes
 export function normalizeCourseCode(code: string): string {
@@ -9,14 +9,14 @@ export function normalizeCourseCode(code: string): string {
 
 
 //Evaluate AND/OR cases
-export function evaluateRequirement(req: PrereqItem, student: Student): { passed: boolean; missing: string[]; flags: string[]; } {
+export function evaluateRequirement(req: PrereqItem, student: Student, coursesDB: CoursesDatabase): { passed: boolean; missing: string[]; flags: string[]; } {
   switch (req.type) {
     case "AND": {
       const missing: string[] = [];
       const flags: string[] = [];
       let passed = true;
       for (const r of req.requirements) {
-        const result = evaluateRequirement(r, student);
+        const result = evaluateRequirement(r, student, coursesDB);
         flags.push(...result.flags);
         if (!result.passed) {
           passed = false;
@@ -27,27 +27,43 @@ export function evaluateRequirement(req: PrereqItem, student: Student): { passed
     }
 
     case "OR": {
-      const results = req.requirements.map(r => evaluateRequirement(r, student));
-      const flags = results.flatMap(res => res.flags);
-      //If ANY of the OR conditions are met, it passes
-      if (results.some(res => res.passed)) {
-        return { passed: true, missing: [], flags };
-      } 
-      const allMissing = results.flatMap(res => res.missing);
+      if ('credits' in req && req.credits !== undefined) {
+        let credits = 0;
+        let missing = "Requires at least " + req.credits + " credits from (" + req.requirements.map(r => 'name' in r ? r.name : '').join(" OR ") + ")";
+        const flags: string[] = [];
+        for (const r of req.requirements) {
+          const result = evaluateRequirement(r, student, coursesDB);
+          flags.push(...result.flags);
+          if (result.passed) {
+            credits += coursesDB[r.name]?.credits || 0.5;
+          }
+        }
+        missing += `, but only ${credits} earned`;
 
-      //if any of the failed courses were actually attempted
-      //Adds "(Requires)" to the string
-      const attemptedButFailed = allMissing.filter(missingStr => missingStr.includes("(Requires"));
+        return { passed: credits >= req.credits, missing: [missing], flags };
+      } else {
+        const results = req.requirements.map(r => evaluateRequirement(r, student, coursesDB));
+        const flags = results.flatMap(res => res.flags);
+        //If ANY of the OR conditions are met, it passes
+        if (results.some(res => res.passed)) {
+          return { passed: true, missing: [], flags };
+        } 
+        const allMissing = results.flatMap(res => res.missing);
 
-      if (attemptedButFailed.length > 0) {
-        //If student attempted at least one of the courses but didn't get the grade,
-        //Show the courses they attempted and failed
-        return { passed: false, missing: [attemptedButFailed.join(" OR ")], flags };
+        //if any of the failed courses were actually attempted
+        //Adds "(Requires)" to the string
+        const attemptedButFailed = allMissing.filter(missingStr => missingStr.includes("(Requires"));
+
+        if (attemptedButFailed.length > 0) {
+          //If student attempted at least one of the courses but didn't get the grade,
+          //Show the courses they attempted and failed
+          return { passed: false, missing: [attemptedButFailed.join(" OR ")], flags };
+        }
+
+        //If they never attempted ANY of the options, show the standard (A OR B OR C) format
+        const missingOptions = results.map(res => res.missing.join(" AND ")).join(" OR ");
+        return { passed: false, missing: [`(${missingOptions})`], flags };
       }
-
-      //If they never attempted ANY of the options, show the standard (A OR B OR C) format
-      const missingOptions = results.map(res => res.missing.join(" AND ")).join(" OR ");
-      return { passed: false, missing: [`(${missingOptions})`], flags };
     }
 
     case "COURSE": {
@@ -111,7 +127,7 @@ export function checkCourse(courseCode: string, student: Student, coursesDB: Cou
   }
 
   //Extract the boolean and missing array from the result object
-  const result = evaluateRequirement(courseInfo.prereqs, student);
+  const result = evaluateRequirement(courseInfo.prereqs, student, coursesDB);
   
   return {
     passed: result.passed, 

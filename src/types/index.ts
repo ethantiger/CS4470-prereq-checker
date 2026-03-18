@@ -27,10 +27,15 @@ export interface CoursePrereq {
 export interface PrereqGroup {
     type: JoinType.AND | JoinType.OR;
     requirements: PrereqItem[];
-    credits?: number;
 }
 
-export type PrereqItem = PrereqGroup | CoursePrereq;
+export interface PrereqGroupWithCredits {
+  type: JoinType.OR,
+  requirements: CoursePrereq[],
+  credits: number
+}
+
+export type PrereqItem = PrereqGroup | PrereqGroupWithCredits | CoursePrereq;
 
 export interface CourseData {
   credits: number | null;
