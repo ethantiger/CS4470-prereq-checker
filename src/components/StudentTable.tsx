@@ -70,6 +70,16 @@ export default function StudentTable({course, courses}: {course: string, courses
       if (a.eligibility.passed !== b.eligibility.passed) {
         return a.eligibility.passed ? 1 : -1;
       }
+      
+      // Among eligible students, show those with flags first
+      if (a.eligibility.passed && b.eligibility.passed) {
+        const aHasFlags = !!a.eligibility.flags;
+        const bHasFlags = !!b.eligibility.flags;
+        
+        if (aHasFlags !== bHasFlags) {
+          return aHasFlags ? -1 : 1;
+        }
+      }
     }
     
     // Then by the selected sort key
