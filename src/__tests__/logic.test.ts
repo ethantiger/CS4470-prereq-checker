@@ -78,16 +78,23 @@ describe('evaluateRequirement – COURSE', () => {
     expect(result.missing).toContain('COMPSCI1025');
   });
 
-  // it('uses the best grade across multiple attempts', () => {
-  //   const student = makeStudent([
-  //     { code: 'CS1234', grade: 45 },
-  //     { code: 'CS1234', grade: 70 },
-  //   ]);
-  //   const result = evaluateRequirement(req, student);
-  //   expect(result.passed).toBe(true);
-  // });
+  it('PASS - uses most recent grade instead of best grade across multiple attempts', () => {
+      const student = makeStudent([
+        { code: 'COMPSCI1025', grade: 45 },
+        { code: 'COMPSCI1025', grade: 70 },
+      ]);
+      const result = evaluateRequirement(req, student, {});
+      expect(result.passed).toBe(true);
+  });
 
-  todo('users most recent attempt rather than best grade across multiple attempts');
+  it('FAIL - uses most recent grade instead of best grade across multiple attempts', () => {
+      const student = makeStudent([
+        { code: 'COMPSCI1025', grade: 70 },
+        { code: 'COMPSCI1025', grade: 45 },
+      ]);
+      const result = evaluateRequirement(req, student, {});
+      expect(result.passed).toBe(false);
+  });
 
   it('normalizes course codes when matching', () => {
     // Student transcript may have suffix "A" on the code

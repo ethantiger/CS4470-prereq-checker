@@ -85,18 +85,17 @@ export function evaluateRequirement(req: PrereqItem, student: Student, coursesDB
       if (attempts.some(a => a.grade === 'CR' || a.grade === 'PAS')) {
         return { passed: true, missing: [], flags: [`${req.name} passed with CR/PAS`] }; // They passed with CR/PAS!
       }
-      //Find their highest grade across all attempts
-      const bestGrade = Math.max(...attempts.map(a => (typeof a.grade === 'number' ? a.grade : 0)));
-      const requiredGrade = req.minGrade !== undefined ? req.minGrade : 0; // default to 0 if no minGrade
 
-      if (bestGrade >= requiredGrade) {
+      // Use most recent grade
+      const recentGrade = attempts[attempts.length - 1].grade;
+      const requiredGrade = req.minGrade !== undefined ? req.minGrade : 60; // default to 60 if no minGrade
+
+      if (recentGrade === 'CR' || recentGrade === 'PAS' || (typeof recentGrade === 'number' && recentGrade >= requiredGrade)) {
         return { passed: true, missing: [], flags: [] }; // They passed!
       } else {
-        //They took it but the grade < minGrade 
-        //Append the grade info directly to the missing string
         return { 
           passed: false, 
-          missing: [`${req.name} (Requires ${requiredGrade}%, got ${bestGrade}%)`],
+          missing: [`${req.name} (Requires ${requiredGrade}%, got ${recentGrade}%)`],
           flags: []
         };
       }
