@@ -9,7 +9,7 @@ export interface Course {
   campus: string;
   title: string;
   units: number | null;
-  grade: number | null;
+  grade: number | 'CR' | 'PAS' | null;
 }
 
 export enum JoinType {

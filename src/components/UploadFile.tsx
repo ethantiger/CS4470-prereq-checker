@@ -10,45 +10,27 @@ export default function UploadFile() {
   const { addStudent, clearStudents } = useStudentActions();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    const file = e.target.files?.[0];
 
-    // Clear existing students before uploading new PDF
-    await clearStudents();
-
-    for (const file of Array.from(files)) {
-      try {
-        const studentInfo = await extractInfo(file);
-        console.log('Extracted courses:', studentInfo);
-        
-        // Handle both single student and array of students (multi-page PDFs)
-        if (Array.isArray(studentInfo)) {
-          for (const student of studentInfo) {
-            addStudent(student);
-          }
-          console.log(`Added ${studentInfo.length} students from PDF pages`);
-        } else {
-          addStudent(studentInfo);
-        }
-      } catch (error) {
-        console.error('Error parsing PDF:', error);
-        
-        // Provide user-friendly error messages for different scenarios
-        let userMessage = 'Error parsing PDF file: ';
-        const errorMsg = error instanceof Error ? error.message : String(error);
-        
-        if (errorMsg.includes('empty') || errorMsg.includes('corrupted')) {
-          userMessage += 'The PDF appears to be empty or corrupted. Please try uploading the file again.';
-        } else if (errorMsg.includes('No student data found')) {
-          userMessage += 'No student information could be found in this file. The system can work with both regular and redacted transcripts.';
-        } else {
-          userMessage += errorMsg;
-        }
-        
-        alert(userMessage);
-      }
+    if (!file) {
+      alert('No file selected. Please choose a PDF file to upload.');
+      return;
     }
-    
+
+    clearStudents();
+
+    try {
+      const studentInfo = await extractInfo(file);
+      
+      for (const student of studentInfo) {
+        addStudent(student);
+      }
+      console.log(`Added ${studentInfo.length} students from PDF pages`);
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
   };
 
   return (

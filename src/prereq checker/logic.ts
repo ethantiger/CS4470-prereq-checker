@@ -9,27 +9,29 @@ export function normalizeCourseCode(code: string): string {
 
 
 //Evaluate AND/OR cases
-export function evaluateRequirement(req: PrereqItem, student: Student): { passed: boolean; missing: string[] } {
+export function evaluateRequirement(req: PrereqItem, student: Student): { passed: boolean; missing: string[]; flags: string[]; } {
   switch (req.type) {
     case "AND": {
       const missing: string[] = [];
+      const flags: string[] = [];
       let passed = true;
       for (const r of req.requirements) {
         const result = evaluateRequirement(r, student);
+        flags.push(...result.flags);
         if (!result.passed) {
           passed = false;
           missing.push(...result.missing);
         }
       }
-      return { passed, missing };
+      return { passed, missing, flags };
     }
 
     case "OR": {
       const results = req.requirements.map(r => evaluateRequirement(r, student));
-      
+      const flags = results.flatMap(res => res.flags);
       //If ANY of the OR conditions are met, it passes
       if (results.some(res => res.passed)) {
-        return { passed: true, missing: [] };
+        return { passed: true, missing: [], flags };
       } 
       const allMissing = results.flatMap(res => res.missing);
 
@@ -40,12 +42,12 @@ export function evaluateRequirement(req: PrereqItem, student: Student): { passed
       if (attemptedButFailed.length > 0) {
         //If student attempted at least one of the courses but didn't get the grade,
         //Show the courses they attempted and failed
-        return { passed: false, missing: [attemptedButFailed.join(" OR ")] };
+        return { passed: false, missing: [attemptedButFailed.join(" OR ")], flags };
       }
 
       //If they never attempted ANY of the options, show the standard (A OR B OR C) format
       const missingOptions = results.map(res => res.missing.join(" AND ")).join(" OR ");
-      return { passed: false, missing: [`(${missingOptions})`] };
+      return { passed: false, missing: [`(${missingOptions})`], flags };
     }
 
     case "COURSE": {
@@ -61,26 +63,30 @@ export function evaluateRequirement(req: PrereqItem, student: Student): { passed
 
       //If they never even attempted it, it's missing entirely
       if (attempts.length === 0) {
-        return { passed: false, missing: [req.name] };
+        return { passed: false, missing: [req.name], flags: [] };
       }
 
+      if (attempts.some(a => a.grade === 'CR' || a.grade === 'PAS')) {
+        return { passed: true, missing: [], flags: [`${req.name} passed with CR/PAS`] }; // They passed with CR/PAS!
+      }
       //Find their highest grade across all attempts
-      const bestGrade = Math.max(...attempts.map(a => a.grade));
+      const bestGrade = Math.max(...attempts.map(a => (typeof a.grade === 'number' ? a.grade : 0)));
       const requiredGrade = req.minGrade !== undefined ? req.minGrade : 0; // default to 0 if no minGrade
 
       if (bestGrade >= requiredGrade) {
-        return { passed: true, missing: [] }; // They passed!
+        return { passed: true, missing: [], flags: [] }; // They passed!
       } else {
         //They took it but the grade < minGrade 
         //Append the grade info directly to the missing string
         return { 
           passed: false, 
-          missing: [`${req.name} (Requires ${requiredGrade}%, got ${bestGrade}%)`] 
+          missing: [`${req.name} (Requires ${requiredGrade}%, got ${bestGrade}%)`],
+          flags: []
         };
       }
     }
     default:
-      return { passed: false, missing: ["Unknown requirement"] };
+      return { passed: false, missing: ["Unknown requirement"], flags: [] };
   }
 }
 
@@ -99,9 +105,10 @@ export function checkCourse(courseCode: string, student: Student, coursesDB: Cou
 
   //Extract the boolean and missing array from the result object
   const result = evaluateRequirement(courseInfo.prereqs, student);
-
+  
   return {
     passed: result.passed, 
-    reason: result.passed ? "Prerequisites satisfied" : `Missing: ${result.missing.join(", ")}`
+    reason: result.passed ? "Prerequisites satisfied" : `Missing: ${result.missing.join(", ")}`,
+    flags: result.flags.length > 0 ? `Flagged: ${result.flags.join(", ")}` : null
   };
 }

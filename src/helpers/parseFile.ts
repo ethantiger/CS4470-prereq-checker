@@ -1,5 +1,5 @@
 import { PDFParse } from 'pdf-parse';
-import type { Course } from '../types/index';
+import type { Course, Student } from '../types/index';
 
 PDFParse.setWorker('https://cdn.jsdelivr.net/npm/pdf-parse@latest/dist/pdf-parse/web/pdf.worker.mjs');
 
@@ -8,19 +8,27 @@ async function extractText(file: File): Promise<string> {
 
   const textResult = await pdfParser.getText();
   const text = textResult.text;
-
-  // Check if the PDF is empty
-  if (!text || text.trim().length < 10) {
-    throw new Error('PDF appears to be empty or corrupted');
-  }
   
   return text;
 }
 
+const TRANSFER_COURSE_RE = /^(?<dept>[A-Z]+)\s+(?<number>\d{4}[A-Z])\s+(?<title>.+?)\s+(?<credits>\d+\.\d+)\s+CR$/gim;
 const COURSE_LINE_RE = /^(?<code>[A-Z]{2,}\s*\d{4}[A-Z])\s+(?<section>\d{3})\s+(?<campus>UW)\s+(?<title>.+?)\s+(?<units>\d+\.\d)\s+(?<grade>\d{3})?/gim;
 
 function findCourseLines(text: string) {
   const out = [];
+
+  for (const m of text.matchAll(TRANSFER_COURSE_RE)) {
+    const g = m.groups || {};
+    out.push({
+      code: (g.dept || '').trim() + ' ' + (g.number || '').trim(),
+      campus: 'TRANSFER',
+      title: (g.title || '').trim(),
+      units: g.credits ? Number(g.credits) : null,
+      grade: 'CR',
+    } as Course);
+  }
+
   for (const m of text.matchAll(COURSE_LINE_RE)) {
     const g = m.groups || {};
     out.push({
@@ -94,51 +102,29 @@ function splitByStudentID(text: string): string[] {
   return segments;
 }
 
-async function extractInfo(file: File) {
+async function extractInfo(file: File): Promise<Student[]> {
   try {
     const text = await extractText(file);
     const segments = splitByStudentID(text);
-    console.log("Segments:", segments)
     
     if (segments.length === 0 || segments.every(s => s.trim().length === 0)) {
       throw new Error('No student data found in PDF');
     }
-    
-    // Check if this appears to be a redacted PDF (uses Page: X markers instead of student IDs)
-    const hasPageMarkers = segments.some(s => /Page:\s*\d+/m.test(s));
-    const hasStudentIds = segments.some(s => /^\d{9}/m.test(s));
-    
-    console.log(`Processing PDF: ${hasPageMarkers && !hasStudentIds ? 'Redacted (using page markers)' : 'Standard (using student IDs)'}, ${segments.length} segments found`);
     
     const students = segments.map((segment, index) => {
       try {
         const courses = findCourseLines(segment);
         const id = findStudentID(segment, index);
         const name = findStudentName(segment);
-        
-        // For redacted PDFs
-        let finalName = name;
-        if (!hasStudentIds && !name) {
-          finalName = `Student ${index + 1} (Name Redacted)`;
-        }
-        
-        return { id, courses, name: finalName };
+        return { id, courses, name } as Student;
       } catch (error) {
         throw new Error(`Failed to parse student segment ${index + 1}: ${error.message}`);
       }
     });
+        
+    console.log(`Successfully processed ${students.length} student records`);
     
-    
-    const validStudents = students.filter(s => s.id && !isNaN(s.id));
-    
-    if (validStudents.length === 0) {
-      throw new Error('No valid student records could be created');
-    }
-    
-    console.log(`Successfully processed ${validStudents.length} student records`);
-    
-    
-    return validStudents.length === 1 ? validStudents[0] : validStudents;
+    return students;
     
   } catch (error) {
     
