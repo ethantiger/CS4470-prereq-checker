@@ -1,12 +1,12 @@
 import { todo } from 'node:test';
 import { normalizeCourseCode, evaluateRequirement, checkCourse } from '../prereq checker/logic';
-import { Student, PrereqItem, CoursesDatabase, JoinType } from '../types';
+import { Student, PrereqItem, CoursesDatabase, JoinType, Course } from '../types';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeStudent(courses: { code: string; grade: number }[]): Student {
+function makeStudent(courses: { code: string; grade: number | 'CR' | 'PAS' }[]): Student {
   return {
     id: 1,
     name: 'Test Student',
@@ -221,6 +221,8 @@ describe('checkCourse', () => {
     const student = makeStudent([{ code: 'COMPSCI1027', grade: 80 }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 90 }]);
     const result = checkCourse('COMPSCI2214', student, db);
     expect(result.passed).toBe(true);
+    expect(result.reason).toBe('Prerequisites satisfied');
+    expect(result.flags).toBeNull();
   });
 
   it('fails when the student is missing a prerequisite', () => {
@@ -252,9 +254,15 @@ describe('checkCourse', () => {
     expect(result.reason).toContain('COMPSCI1020');
   });
 
-  todo('handles antirequisites properly');
+  it('flags courses passed with CR/PAS', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 'CR' }, { code: 'COMPSCI1020', grade: 70 }, { code: 'CALCULUS1500', grade: 'PAS' }]);
+    const result = checkCourse('COMPSCI2214', student, db);
+    expect(result.passed).toBe(true);
+    expect(result.flags).toContain('COMPSCI1027 passed with CR/PAS');
+    expect(result.flags).toContain('CALCULUS1500 passed with CR/PAS');
+  });
 
+  todo('handles antirequisites properly');
   todo('handles special cases like COVID');
-  todo('handles special cases like Transfer Credits');
   todo('handles special cases like Program Status');
 });
