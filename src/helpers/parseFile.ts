@@ -12,10 +12,23 @@ async function extractText(file: File): Promise<string> {
   return text;
 }
 
+const TRANSFER_COURSE_RE = /^(?<dept>[A-Z]+)\s+(?<number>\d{4}[A-Z])\s+(?<title>.+?)\s+(?<credits>\d+\.\d+)\s+CR$/gim;
 const COURSE_LINE_RE = /^(?<code>[A-Z]{2,}\s*\d{4}[A-Z])\s+(?<section>\d{3})\s+(?<campus>UW)\s+(?<title>.+?)\s+(?<units>\d+\.\d)\s+(?<grade>\d{3})?/gim;
 
 function findCourseLines(text: string) {
   const out = [];
+
+  for (const m of text.matchAll(TRANSFER_COURSE_RE)) {
+    const g = m.groups || {};
+    out.push({
+      code: (g.dept || '').trim() + ' ' + (g.number || '').trim(),
+      campus: 'TRANSFER',
+      title: (g.title || '').trim(),
+      units: g.credits ? Number(g.credits) : null,
+      grade: 'CR',
+    } as Course);
+  }
+
   for (const m of text.matchAll(COURSE_LINE_RE)) {
     const g = m.groups || {};
     out.push({

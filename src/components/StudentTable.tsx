@@ -159,8 +159,15 @@ export default function StudentTable({course, courses}: {course: string, courses
                       {isValidCourse && student.eligibility && (
                         <td>
                           {student.eligibility.passed ? (
-                            <div style={{ color: '#059669', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ color: '#059669', fontWeight: 'bold', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ color: '#059669', fontWeight: 'bold' }}>
                               ✅ Eligible
+                              </span>
+                              {student.eligibility.flags && (
+                              <span style={{ color: '#78350f', fontSize: '0.8rem', backgroundColor: '#fcd34d', padding: '3px 8px', borderRadius: '4px' }}>
+                                {student.eligibility.flags}
+                              </span>
+                              )}
                             </div>
                           ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -184,6 +191,7 @@ export default function StudentTable({course, courses}: {course: string, courses
                               <tr>
                                 <th>Code</th>
                                 <th>Title</th>
+                                <th>Campus</th>
                                 <th>Units</th>
                                 <th>Grade</th>
                               </tr>
@@ -193,6 +201,7 @@ export default function StudentTable({course, courses}: {course: string, courses
                                 <tr key={course.code}>
                                   <td>{course.code}</td>
                                   <td>{course.title}</td>
+                                  <td>{course.campus}</td>
                                   <td>{course.units}</td>
                                   <td>{course.grade ?? 'N/A'}</td>
                                 </tr>
