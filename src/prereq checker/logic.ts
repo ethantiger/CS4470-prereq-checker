@@ -111,17 +111,41 @@ export function checkCourse(courseCode: string, student: Student, coursesDB: Cou
   const cleanTargetCode = normalizeCourseCode(courseCode);
   const courseInfo = coursesDB[cleanTargetCode];
 
+  let retakeCount = 0;
+  let numPasses = 0;
   for (const c in student.courses) {
     const normalizedStudentCode = normalizeCourseCode(student.courses[c].code);
+    // If they have an antirequisite for the target course, they fail immediately regardless of other factors
     if (courseInfo.antireqs.find((antireq: string) => normalizeCourseCode(antireq) === normalizedStudentCode)) {
       return { passed: false, reason: `Failed due to antirequisite: ${student.courses[c].code}` };
     }
+    if (normalizedStudentCode === cleanTargetCode) {
+      retakeCount++;
+      const grade = student.courses[c].grade;
+      if (grade === 'CR' || grade === 'PAS') {
+        numPasses++;
+      } else if (typeof grade === 'number' && grade >= 50) {
+        numPasses++;
+      }
+    }
   }
 
+  // If they've attempted the course more than 3 times, they fail regardless of prerequisites
+  if (retakeCount >= 3 && numPasses === 0) {
+    return { passed: false, reason: `Failed due to retake limit exceeded (attempted ${retakeCount} times)` };
+  }
+
+  // Can only pass a course twice
+  if (retakeCount >= 2 && numPasses >= 2) {
+    return { passed: false, reason: `Failed due to retake limit exceeded (attempted ${retakeCount} times with ${numPasses} passes)` };
+  }
+
+  // Course not in DB - assume no prereqs
   if (!courseInfo) {
     return { passed: true, reason: `Course ${cleanTargetCode} not found in DB` };
   }
   
+  // If there are no prerequisites, the student automatically passes
   if (!courseInfo.prereqs) {
     return { passed: true, reason: "" };
   }

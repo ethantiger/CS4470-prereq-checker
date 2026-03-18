@@ -174,6 +174,19 @@ describe('evaluateRequirement – OR', () => {
 
 describe('checkCourse', () => {
   const db: CoursesDatabase = {
+    COMPSCI1027: {
+      credits: 0.5,
+      prereqs: {
+        type: JoinType.OR,
+        requirements: [
+          { type: JoinType.COURSE, name: 'COMPSCI1025', minGrade: 65 },
+          { type: JoinType.COURSE, name: 'COMPSCI1026', minGrade: 65 },
+          { type: JoinType.COURSE, name: 'DATASCI1200', minGrade: 65 },
+          { type: JoinType.COURSE, name: 'ENGSCI1036', minGrade: 65 },
+        ],
+      },
+      antireqs: ['COMPSCI1037','COMPSCI2121','DH2221'],
+    },
     COMPSCI2214: {
       credits: 0.5,
       prereqs: {
@@ -275,6 +288,32 @@ describe('checkCourse', () => {
     const result = checkCourse('COMPSCI2214', student, db);
     expect(result.passed).toBe(false);
     expect(result.reason).toContain('Requires at least 1 credits from');
+  });
+
+  it('fails if the student exceeds the retake limit', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 40 }, { code: 'COMPSCI1027', grade: 45 }, { code: 'COMPSCI1027', grade: 49 }]);
+    const result = checkCourse('COMPSCI1027', student, db);
+    expect(result.passed).toBe(false);
+    expect(result.reason).toContain('retake limit exceeded');
+  });
+
+  it('fails if the student exceeds the retake limit even if they have a passing grade', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 50 }, { code: 'COMPSCI1027', grade: 70 }]);
+    const result = checkCourse('COMPSCI1027', student, db);
+    expect(result.passed).toBe(false);
+    expect(result.reason).toContain('retake limit exceeded');
+  });
+
+  it('passes if the student fails twice', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 40 }, { code: 'COMPSCI1027', grade: 45 }, { code: 'COMPSCI1025', grade: 80 }]);
+    const result = checkCourse('COMPSCI1027', student, db);
+    expect(result.passed).toBe(true);
+  });
+
+  it('passes if the student fails once and passes once', () => {
+    const student = makeStudent([{ code: 'COMPSCI1027', grade: 40 }, { code: 'COMPSCI1027', grade: 80 }, { code: 'COMPSCI1025', grade: 80 }]);
+    const result = checkCourse('COMPSCI1027', student, db);
+    expect(result.passed).toBe(true);
   });
 
   todo('handles special cases like Program Status');

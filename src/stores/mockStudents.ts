@@ -148,4 +148,51 @@ export const mockStudents: Student[] = [
       },
     ]
   },
+  {
+    id: 251000000 + Math.floor(Math.random() * 1000000),
+    name: 'Retake Limit Example Passed',
+    courses: [
+      {
+        code: 'COMPSCI 2214',
+        campus: '',
+        title: '',
+        units: 0.5,
+        grade: 80
+      },
+      {
+        code: 'COMPSCI 2214',
+        campus: '',
+        title: '',
+        units: 0.5,
+        grade: 80
+      },
+    ]
+  },
+  {
+    id: 251000000 + Math.floor(Math.random() * 1000000),
+    name: 'Retake Limit Example Failed',
+    courses: [
+      {
+        code: 'COMPSCI 2214',
+        campus: '',
+        title: '',
+        units: 0.5,
+        grade: 49
+      },
+      {
+        code: 'COMPSCI 2214',
+        campus: '',
+        title: '',
+        units: 0.5,
+        grade: 49
+      },
+      {
+        code: 'COMPSCI 2214',
+        campus: '',
+        title: '',
+        units: 0.5,
+        grade: 49
+      },
+    ]
+  },
 ]
