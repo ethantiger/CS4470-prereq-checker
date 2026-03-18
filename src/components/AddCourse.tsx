@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useImmer } from 'use-immer';
 import './AddCourse.css';
-import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup, CourseData } from '@/types';
+import { CoursesDatabase, PrereqItem, JoinType, CoursePrereq, PrereqGroup, CourseData, PrereqGroupWithCredits } from '@/types';
 
 // AUTHOR: Tyler Larson
 // This component is for adding a new course to the database. It includes fields for course code, name, department, weight, antirequisites, and prerequisites. The prerequisite section allows for complex logic with multiple groups of courses joined by AND/OR.
@@ -170,7 +170,7 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
         return renderPrereqGroup(item, depth, path);
     };
 
-    const renderPrereqGroup = (group: PrereqGroup, depth: number = 0, path: number[] = []): JSX.Element => {
+    const renderPrereqGroup = (group: PrereqGroup | PrereqGroupWithCredits, depth: number = 0, path: number[] = []): JSX.Element => {
         const indentSize = depth * 1.5;
         const isNested = depth > 0;
         
@@ -212,12 +212,12 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                             <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '0.25em', color: '#64748b', fontWeight: 600 }}>Credits Required</label>
                             <input
                                 type="number"
-                                min="0"
                                 step="0.5"
-                                value={group.credits || ''}
+                                value={'credits' in group && group.credits !== undefined ? group.credits : ''}
                                 placeholder="Optional"
+                                onWheel={(e) => e.currentTarget.blur()}
                                 onChange={(e) => updatePrereqs(draft => {
-                                    const target = getNestedItem(draft, path) as PrereqGroup;
+                                    const target = getNestedItem(draft, path) as PrereqGroupWithCredits;
                                     target.credits = e.target.value ? Number(e.target.value) : undefined;
                                 })}
                                 style={{ 
@@ -442,6 +442,7 @@ export default function AddCourse({ courses, onCancel, onAdded, editMode = false
                             step="0.5"
                             placeholder="(e.g., 0.5)"
                             value={weight}
+                            onWheel={(e) => e.currentTarget.blur()}
                             onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
                         />
                     </div>

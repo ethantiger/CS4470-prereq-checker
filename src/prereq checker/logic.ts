@@ -1,4 +1,4 @@
-import { Student, PrereqItem, CoursesDatabase } from '@/types';
+import { Student, PrereqItem, CoursesDatabase, PrereqGroupWithCredits } from '@/types';
 
 // Helper: Strips trailing letters (A, B, F, G, etc.) from course codes
 export function normalizeCourseCode(code: string): string {
@@ -9,14 +9,14 @@ export function normalizeCourseCode(code: string): string {
 
 
 //Evaluate AND/OR cases
-export function evaluateRequirement(req: PrereqItem, student: Student): { passed: boolean; missing: string[]; flags: string[]; } {
+export function evaluateRequirement(req: PrereqItem, student: Student, coursesDB: CoursesDatabase): { passed: boolean; missing: string[]; flags: string[]; } {
   switch (req.type) {
     case "AND": {
       const missing: string[] = [];
       const flags: string[] = [];
       let passed = true;
       for (const r of req.requirements) {
-        const result = evaluateRequirement(r, student);
+        const result = evaluateRequirement(r, student, coursesDB);
         flags.push(...result.flags);
         if (!result.passed) {
           passed = false;
@@ -27,27 +27,43 @@ export function evaluateRequirement(req: PrereqItem, student: Student): { passed
     }
 
     case "OR": {
-      const results = req.requirements.map(r => evaluateRequirement(r, student));
-      const flags = results.flatMap(res => res.flags);
-      //If ANY of the OR conditions are met, it passes
-      if (results.some(res => res.passed)) {
-        return { passed: true, missing: [], flags };
-      } 
-      const allMissing = results.flatMap(res => res.missing);
+      if ('credits' in req && req.credits !== undefined) {
+        let credits = 0;
+        let missing = "Requires at least " + req.credits + " credits from (" + req.requirements.map(r => 'name' in r ? r.name : '').join(" OR ") + ")";
+        const flags: string[] = [];
+        for (const r of req.requirements) {
+          const result = evaluateRequirement(r, student, coursesDB);
+          flags.push(...result.flags);
+          if (result.passed) {
+            credits += coursesDB[r.name]?.credits || 0.5;
+          }
+        }
+        missing += `, but only ${credits} earned`;
 
-      //if any of the failed courses were actually attempted
-      //Adds "(Requires)" to the string
-      const attemptedButFailed = allMissing.filter(missingStr => missingStr.includes("(Requires"));
+        return { passed: credits >= req.credits, missing: [missing], flags };
+      } else {
+        const results = req.requirements.map(r => evaluateRequirement(r, student, coursesDB));
+        const flags = results.flatMap(res => res.flags);
+        //If ANY of the OR conditions are met, it passes
+        if (results.some(res => res.passed)) {
+          return { passed: true, missing: [], flags };
+        } 
+        const allMissing = results.flatMap(res => res.missing);
 
-      if (attemptedButFailed.length > 0) {
-        //If student attempted at least one of the courses but didn't get the grade,
-        //Show the courses they attempted and failed
-        return { passed: false, missing: [attemptedButFailed.join(" OR ")], flags };
+        //if any of the failed courses were actually attempted
+        //Adds "(Requires)" to the string
+        const attemptedButFailed = allMissing.filter(missingStr => missingStr.includes("(Requires"));
+
+        if (attemptedButFailed.length > 0) {
+          //If student attempted at least one of the courses but didn't get the grade,
+          //Show the courses they attempted and failed
+          return { passed: false, missing: [attemptedButFailed.join(" OR ")], flags };
+        }
+
+        //If they never attempted ANY of the options, show the standard (A OR B OR C) format
+        const missingOptions = results.map(res => res.missing.join(" AND ")).join(" OR ");
+        return { passed: false, missing: [`(${missingOptions})`], flags };
       }
-
-      //If they never attempted ANY of the options, show the standard (A OR B OR C) format
-      const missingOptions = results.map(res => res.missing.join(" AND ")).join(" OR ");
-      return { passed: false, missing: [`(${missingOptions})`], flags };
     }
 
     case "COURSE": {
@@ -69,18 +85,17 @@ export function evaluateRequirement(req: PrereqItem, student: Student): { passed
       if (attempts.some(a => a.grade === 'CR' || a.grade === 'PAS')) {
         return { passed: true, missing: [], flags: [`${req.name} passed with CR/PAS`] }; // They passed with CR/PAS!
       }
-      //Find their highest grade across all attempts
-      const bestGrade = Math.max(...attempts.map(a => (typeof a.grade === 'number' ? a.grade : 0)));
-      const requiredGrade = req.minGrade !== undefined ? req.minGrade : 0; // default to 0 if no minGrade
 
-      if (bestGrade >= requiredGrade) {
+      // Use most recent grade
+      const recentGrade = attempts[attempts.length - 1].grade;
+      const requiredGrade = req.minGrade !== undefined ? req.minGrade : 60; // default to 60 if no minGrade
+
+      if (recentGrade === 'CR' || recentGrade === 'PAS' || (typeof recentGrade === 'number' && recentGrade >= requiredGrade)) {
         return { passed: true, missing: [], flags: [] }; // They passed!
       } else {
-        //They took it but the grade < minGrade 
-        //Append the grade info directly to the missing string
         return { 
           passed: false, 
-          missing: [`${req.name} (Requires ${requiredGrade}%, got ${bestGrade}%)`],
+          missing: [`${req.name} (Requires ${requiredGrade}%, got ${recentGrade}%)`],
           flags: []
         };
       }
@@ -95,16 +110,47 @@ export function checkCourse(courseCode: string, student: Student, coursesDB: Cou
   const cleanTargetCode = normalizeCourseCode(courseCode);
   const courseInfo = coursesDB[cleanTargetCode];
 
+  let retakeCount = 0;
+  let numPasses = 0;
+  for (const c in student.courses) {
+    const normalizedStudentCode = normalizeCourseCode(student.courses[c].code);
+    // If they have an antirequisite for the target course, they fail immediately regardless of other factors
+    if (courseInfo.antireqs.find((antireq: string) => normalizeCourseCode(antireq) === normalizedStudentCode)) {
+      return { passed: false, reason: `Failed due to antirequisite: ${student.courses[c].code}` };
+    }
+    if (normalizedStudentCode === cleanTargetCode) {
+      retakeCount++;
+      const grade = student.courses[c].grade;
+      if (grade === 'CR' || grade === 'PAS') {
+        numPasses++;
+      } else if (typeof grade === 'number' && grade >= 50) {
+        numPasses++;
+      }
+    }
+  }
+
+  // If they've attempted the course more than 3 times, they fail regardless of prerequisites
+  if (retakeCount >= 3 && numPasses === 0) {
+    return { passed: false, reason: `Failed due to retake limit exceeded (attempted ${retakeCount} times)` };
+  }
+
+  // Can only pass a course twice
+  if (retakeCount >= 2 && numPasses >= 2) {
+    return { passed: false, reason: `Failed due to retake limit exceeded (attempted ${retakeCount} times with ${numPasses} passes)` };
+  }
+
+  // Course not in DB - assume no prereqs
   if (!courseInfo) {
     return { passed: true, reason: `Course ${cleanTargetCode} not found in DB` };
   }
   
+  // If there are no prerequisites, the student automatically passes
   if (!courseInfo.prereqs) {
     return { passed: true, reason: "" };
   }
 
   //Extract the boolean and missing array from the result object
-  const result = evaluateRequirement(courseInfo.prereqs, student);
+  const result = evaluateRequirement(courseInfo.prereqs, student, coursesDB);
   
   return {
     passed: result.passed, 
