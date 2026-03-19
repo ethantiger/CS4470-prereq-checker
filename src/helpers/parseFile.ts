@@ -13,12 +13,12 @@ async function extractText(file: File): Promise<string> {
 }
 
 const TRANSFER_COURSE_RE = /^(?<dept>[A-Z]+)\s+(?<number>\d{4}[A-Z])\s+(?<title>.+?)\s+(?<credits>\d+\.\d+)\s+CR$/gim;
-const COURSE_LINE_RE = /^(?<code>[A-Z]{2,}\s*\d{4}[A-Z])\s+(?<section>\d{3})\s+(?<campus>UW)\s+(?<title>.+?)\s+(?<units>\d+\.\d)\s+(?<grade>\d{3})?/gim;
+const COURSE_LINE_RE = /^(?<code>[A-Z]{2,}\s*\d{4}[A-Z]?)\s+(?<section>\d{3})\s+(?<campus>UW)\s+(?<title>.+?)\s+(?<units>\d+\.\d)\s+(?<grade>\d{3}|PAS)?/gim;
 
 function findCourseLines(text: string) {
   const out = [];
 
-  for (const m of text.matchAll(TRANSFER_COURSE_RE)) {
+for (const m of text.matchAll(TRANSFER_COURSE_RE)) {
     const g = m.groups || {};
     out.push({
       code: (g.dept || '').trim() + ' ' + (g.number || '').trim(),
@@ -36,7 +36,7 @@ function findCourseLines(text: string) {
       campus: (g.campus || '').trim(),
       title: (g.title || '').trim(),
       units: g.units ? Number(g.units) : null,
-      grade: g.grade ? Number(g.grade) : null,
+      grade: g.grade === 'PAS' ? 'PAS' : g.grade ? Number(g.grade) : null,
     } as Course);
   }
   return out;
