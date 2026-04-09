@@ -13,8 +13,9 @@ const db = new JSONDatabase();
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -31,8 +32,11 @@ const createWindow = () => {
     );
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (app.isPackaged) {
+  mainWindow.webContents.on('devtools-opened', () => {
+    mainWindow.webContents.closeDevTools();
+  });
+}
 };
 
 // This method will be called when Electron has finished
