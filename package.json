@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
+  "repository": "https://github.com/ethantiger/CS4470-prereq-checker",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -57,6 +58,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.11.0",
+    "update-electron-app": "^3.1.2",
     "use-immer": "^0.11.0",
     "zustand": "^5.0.9"
   }
