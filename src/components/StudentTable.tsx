@@ -10,6 +10,7 @@ import { useStudents } from '@/stores/useStudent';
 import './StudentTable.css';
 import { CoursesDatabase } from '@/types';
 import { checkCourse, normalizeCourseCode } from '@/prereq checker/logic';
+import UploadFileButton from './ui/UploadFileButton';
 
 type SortKey = 'id' | 'name';
 type SortDir = 'asc' | 'desc';
@@ -96,15 +97,20 @@ export default function StudentTable({course, courses}: {course: string, courses
 
   return (
     <>
-      {/* Search box above table */}
-      <div className="form-field">
-        <input
-          id="search"
-          type="text"
-          placeholder="Search by Student ID or Name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        {/* Search box above table */}
+        <div className="form-field" style={{ marginBottom: 0 }}>
+          <input
+            id="search"
+            type="text"
+            placeholder="Search by Student ID or Name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div>
+          <UploadFileButton />
+        </div>
       </div>
 
       <div className="table-card">
