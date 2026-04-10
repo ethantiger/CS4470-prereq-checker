@@ -11,6 +11,8 @@ import './StudentTable.css';
 import { CoursesDatabase } from '@/types';
 import { checkCourse, normalizeCourseCode } from '@/prereq checker/logic';
 import UploadFileButton from './ui/UploadFileButton';
+import StudentCourseList from './ui/StudentCourseList';
+import PrereqTree from './ui/CourseData';
 
 type SortKey = 'id' | 'name';
 type SortDir = 'asc' | 'desc';
@@ -18,6 +20,7 @@ type SortDir = 'asc' | 'desc';
 export default function StudentTable({course, courses}: {course: string, courses: CoursesDatabase}) {
   // ✅ Use student.id as the key (stable across search/sort)
   const [openRows, setOpenRows] = useState<{ [key: string]: boolean }>({});
+  const [rowTabs, setRowTabs] = useState<{ [key: string]: 'prereq' | 'courses' }>({});
   const [search, setSearch] = useState('');
 
   // ✅ Sorting
@@ -202,28 +205,45 @@ export default function StudentTable({course, courses}: {course: string, courses
                     {openRows[rowKey] && (
                       <tr>
                         <td colSpan={isValidCourse ? 5 : 4}>
-                          <table style={{ width: '100%', background: '#f9f9f9', margin: '0.5em 0' }}>
-                            <thead>
-                              <tr>
-                                <th>Code</th>
-                                <th>Title</th>
-                                <th>Campus</th>
-                                <th>Units</th>
-                                <th>Grade</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {student.courses.map((course: any) => (
-                                <tr key={course.code}>
-                                  <td>{course.code}</td>
-                                  <td>{course.title}</td>
-                                  <td>{course.campus}</td>
-                                  <td>{course.units}</td>
-                                  <td>{course.grade ?? 'N/A'}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                          <div style={{ display: 'flex', gap: '0.5em', marginBottom: '0.75em', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.5em' }}>
+                            <button
+                              type="button"
+                              className="expand-button"
+                              onClick={() => setRowTabs(prev => ({ ...prev, [rowKey]: 'prereq' }))}
+                              style={{
+                                padding: '0.3em 0.8em',
+                                borderRadius: '6px',
+                                fontWeight: 600,
+                                fontSize: '0.85em',
+                                background: (rowTabs[rowKey] ?? 'prereq') === 'prereq' ? '#3b82f6' : 'transparent',
+                                color: (rowTabs[rowKey] ?? 'prereq') === 'prereq' ? 'white' : '#475569',
+                              }}
+                            >
+                              Breakdown
+                            </button>
+                            <button
+                              type="button"
+                              className="expand-button"
+                              onClick={() => setRowTabs(prev => ({ ...prev, [rowKey]: 'courses' }))}
+                              style={{
+                                padding: '0.3em 0.8em',
+                                borderRadius: '6px',
+                                fontWeight: 600,
+                                fontSize: '0.85em',
+                                background: (rowTabs[rowKey] ?? 'prereq') === 'courses' ? '#3b82f6' : 'transparent',
+                                color: (rowTabs[rowKey] ?? 'prereq') === 'courses' ? 'white' : '#475569',
+                              }}
+                            >
+                              Student Courses
+                            </button>
+                          </div>
+                          {(rowTabs[rowKey] ?? 'prereq') === 'prereq' ? (
+                            isValidCourse
+                              ? <PrereqTree courseData={courses[targetCourse]} studentCourses={student.courses}/>
+                              : <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No course selected.</p>
+                          ) : (
+                            <StudentCourseList student={student} />
+                          )}
                         </td>
                       </tr>
                     )}
