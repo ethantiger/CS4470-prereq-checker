@@ -139,7 +139,7 @@ export default function CourseData({ courseData, studentCourses }: { courseData:
                 <span key={antireq} style={{
                 display: 'inline-block',
                 padding: '0.3em 0.6em',
-                background: `${studentCourses && studentCourses.some(course => normalizeCourseCode(course.code) === normalizeCourseCode(antireq)) ? '#dc2626' : '#fee2e2'}`,
+                background: `${studentCourses && studentCourses.some(course => normalizeCourseCode(course.code) === normalizeCourseCode(antireq)) ? '#faabab' : '#fee2e2'}`,
                 border: '2px solid #ef4444',
                 borderRadius: '6px',
                 color: '#7f1d1d',
