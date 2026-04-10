@@ -156,6 +156,33 @@ export default function CourseData({ courseData, studentCourses }: { courseData:
           </span>
         )}
       </div>
+
+      {courseData.specialConditions && courseData.specialConditions.length > 0 && (
+        <>
+          <h4
+            style={{
+              margin: '1.5em 0 1em 0',
+              color: '#475569',
+              fontSize: '1.1em',
+              fontWeight: 600,
+              borderBottom: '2px solid #e2e8f0',
+              paddingBottom: '0.5em',
+            }}
+          >
+            Special Conditions
+          </h4>
+
+          <div style={{ paddingLeft: '0.5em' }}>
+            <ul style={{ paddingLeft: '1.5em', color: '#475569' }}>
+              {courseData.specialConditions.map((condition, idx) => (
+                <li key={idx} style={{ marginBottom: '0.5em' }}>
+                  {condition}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   )
 }

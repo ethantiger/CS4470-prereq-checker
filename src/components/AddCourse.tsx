@@ -38,6 +38,8 @@ export default function AddCourse({
     const [department, setDepartment] = useState('');
     const [antireqInput, setAntireqInput] = useState('');
     const [antireqs, setAntireqs] = useState<string[]>(initialCourseData?.antireqs || []);
+    const [specialConditionInput, setSpecialConditionInput] = useState('');
+    const [specialConditions, setSpecialConditions] = useState<string[]>(initialCourseData?.specialConditions || []);
     const [error, setError] = useState<string | null>(null);
     const courseCodeRef = useRef<HTMLInputElement>(null);
     const [prereqs, updatePrereqs] = useImmer<PrereqItem>(initialCourseData?.prereqs || null);
@@ -483,9 +485,9 @@ export default function AddCourse({
         setError(null);
 
         if (editMode) {
-            await window.database.updateCourse(initialCourseCode, { prereqs, antireqs, credits: weight });
+            await window.database.updateCourse(initialCourseCode, { prereqs, antireqs, credits: weight, specialConditions });
         } else {
-            await window.database.addCourse(code, { prereqs, antireqs, credits: weight });
+            await window.database.addCourse(code, { prereqs, antireqs, credits: weight, specialConditions });
         }
 
         onAdded();
@@ -542,7 +544,7 @@ export default function AddCourse({
                         />
                     </div>
 
-                    <div className="form-field">
+                    {/* <div className="form-field">
                         <label htmlFor="course-name">Course Name (optional)</label>
                         <input
                             id="course-name"
@@ -562,7 +564,82 @@ export default function AddCourse({
                             value={department}
                             onChange={(e) => setDepartment(e.target.value)}
                         />
+                    </div> */}
+                </div>
+
+                {/* ---- SPECIAL CONDITIONS ---- */}
+                <hr
+                    style={{
+                        margin: '1.5em 0',
+                        border: 'none',
+                        borderTop: '2px solid #e2e8f0'
+                    }}
+                />
+                <h2
+                    style={{
+                        color: '#475569',
+                        fontSize: '1.25em',
+                        fontWeight: 600,
+                        marginBottom: '0.5em'
+                    }}
+                >
+                    Special Conditions
+                </h2>
+
+                {specialConditions.length > 0 && (
+                    <div className="chip-container" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                        {specialConditions.map((c, i) => (
+                            <span key={i} className="chip">
+                                {c}
+                                <button
+                                    type="button"
+                                    onClick={() => setSpecialConditions(prev => prev.filter((_, idx) => idx !== i))}
+                                    aria-label={`Remove condition`}
+                                    className="chip-remove"
+                                >
+                                    ×
+                                </button>
+                            </span>
+                        ))}
                     </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '0.75em', alignItems: 'flex-end', marginBottom: '0.5em' }}>
+                    <div className="form-field" style={{ marginBottom: 0 }}>
+                        <label htmlFor="special-condition-input">Add Condition</label>
+                        <input
+                            id="special-condition-input"
+                            type="text"
+                            placeholder="(e.g., Permission required)"
+                            value={specialConditionInput}
+                            onChange={(e) => setSpecialConditionInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    const val = specialConditionInput.trim();
+                                    if (val) {
+                                        setSpecialConditions(prev => [...prev, val]);
+                                        setSpecialConditionInput('');
+                                    }
+                                }
+                            }}
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        className="secondary-btn"
+                        onClick={() => {
+                            const val = specialConditionInput.trim();
+                            if (val) {
+                                setSpecialConditions(prev => [...prev, val]);
+                                setSpecialConditionInput('');
+                            }
+                        }}
+                        disabled={!specialConditionInput.trim()}
+                        style={{ height: 'fit-content' }}
+                    >
+                        add
+                    </button>
                 </div>
 
                 {/* ---- ANTIREQS ---- */}

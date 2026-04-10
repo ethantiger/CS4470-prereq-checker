@@ -41,6 +41,7 @@ export interface CourseData {
   credits: number | null;
   prereqs: PrereqItem;
   antireqs: string[];
+  specialConditions?: string[];
 }
 
 export interface CoursesDatabase {
